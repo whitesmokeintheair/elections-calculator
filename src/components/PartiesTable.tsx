@@ -10,27 +10,35 @@ import {Table} from 'react-bootstrap';
 export default function PartiesTable(props: any) {
   const { data: {districts, parties, threshold }} = props;
 
-  function handlePercentInput(e: any) {
-    console.log('hey');
-    console.log(e);
+  const districtsVotes = [25000, 15450, 3600];
+
+  const table = new Map();
+  parties.forEach((party: any) => {
+    let votesByDistricts = new Map();
+    districts.forEach((district: any) => {
+      votesByDistricts.set(district.toString(), 0);
+    })
+    table.set(party, votesByDistricts);
+  });
+  console.log(table);
+
+  function handlePercentInput(e: React.FocusEvent<HTMLTableDataCellElement>) {
+    console.log(e.target);
+  }
+
+  function handleVotesInput(e: React.FocusEvent<HTMLTableDataCellElement>) {
+    console.log(e.target);
   }
 
   const renderInputRows = () =>{
     const tableInputs= [];
     for(let i = 0; i<districts.length; i++){
       tableInputs.push(<><td contentEditable onBlur={e => handlePercentInput(e)}>%</td>
-      <td contentEditable></td></>)
+      <td contentEditable onBlur={e => handleVotesInput(e)}></td></>)
     }
     return tableInputs;
   }
 
-  const renderFooter = () => {
-    const tableFooter = [];
-    for(let i = 0; i<districts.length*2; i++){
-      tableFooter.push(<td></td>)
-    }
-    return tableFooter;
-  }
   return(
     <Table striped bordered size="sm">
   <thead>
@@ -51,7 +59,7 @@ export default function PartiesTable(props: any) {
   <tfoot>
     <tr>
       <td>Всього:</td>
-      {renderFooter()}
+      {districtsVotes.map((votes) => <td colSpan={2}>{votes}</td>)}
       <td></td>
     </tr>
   </tfoot>
