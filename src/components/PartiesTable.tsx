@@ -1,12 +1,6 @@
 import React from 'react';
 import {Table} from 'react-bootstrap';
 
-// type PartiesTableProps = {
-//   districts: number[],
-//   parties: string[],
-//   threshold: number
-// }
-
 export default function PartiesTable(props: any) {
   const { data: {districts, parties, threshold }} = props;
 
