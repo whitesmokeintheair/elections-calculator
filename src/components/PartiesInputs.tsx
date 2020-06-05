@@ -34,9 +34,8 @@ function Input(props: any) {
 export default function PartiesInputs() {
     const [arrayInputs, setInputs] = useState([<Input name={0} />]);
     const [clickSave, setClickSave] = useState(false);
-    const renderTable = useMemo(() => {
-    return <PartiesTable data={inputsValue}/>}, [clickSave])
-
+    const renderTable = useMemo(() => <PartiesTable data={inputsValue}/>, [clickSave])
+    
     function AddInput() {
       setInputs(arrayInputs.concat(<Input name={arrayInputs.length} />));
     }
@@ -84,7 +83,7 @@ export default function PartiesInputs() {
         </ div>
       </div>
       </Form>
-        {renderTable}
+        {inputsValue.parties.length !== 0 && renderTable}
       </>
     );
 }
