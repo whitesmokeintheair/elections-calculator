@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import {Form, Button} from 'react-bootstrap';
+import PartiesTable from './PartiesTable';
 
 type PartiesTableProps = {
     parties: string[],
-    district: number[],
+    districts: number[],
     threshold: number
 }
   
 let inputsValue : PartiesTableProps = {
     parties: [],
-    district: [],
+    districts: [],
     threshold: 0
 };
   
@@ -19,30 +21,33 @@ function Input(props: any) {
     }
   
     return (
-      <input
+      <Form.Control
         name={props.name}
         onChange={Change}
-        className="form-inputs__party"
+        className="form-inputs__party input"
         type="text"
         placeholder="Введіть назву партії"
       />
     );
 }
   
-export default function FormInputs() {
+export default function PartiesInputs() {
     const [arrayInputs, setInputs] = useState([<Input name={0} />]);
+    const [clickSave, setClickSave] = useState(false);
+    const renderTable = useMemo(() => {
+    return <PartiesTable data={inputsValue}/>}, [clickSave])
 
     function AddInput() {
       setInputs(arrayInputs.concat(<Input name={arrayInputs.length} />));
     }
 
     function Save() {
-      console.log(inputsValue);
+        setClickSave(clickSave => !clickSave);
     }
 
     function getValueDistriscts(event: any) {
       let stringDistricts = event.target.value;
-      inputsValue["district"] = stringDistricts.split(',').map((dist: any) => parseInt(dist, 10));
+      inputsValue["districts"] = stringDistricts.split(',').map((dist: any) => parseInt(dist, 10));
     }
 
     function getValueThreshold(event: any) {
@@ -50,31 +55,36 @@ export default function FormInputs() {
     }
 
     return (
+        <>
+        <Form>
       <div className="form-inputs">
         <div className="form-inputs__left">
           <form className="form-inputs__parties">{arrayInputs}</form>
-          <button type="button" onClick={AddInput}>
+          <Button variant="outline-primary" type="button" className="button-plus" onClick={AddInput}>
             +
-          </button>
+          </Button>
         </div>
   
         <div className="form-inputs__right">
-          <input
+          <Form.Control
             onChange={getValueDistriscts}
             type="text"
-            className="form-inputs__districts"
+            className="form-inputs__districts input"
             placeholder="Введіть округи (через кому)"
           />
-          <input
+          <Form.Control
             onChange={getValueThreshold}
             type="text"
-            className="form-inputs__threshold"
+            className="form-inputs__threshold input"
             placeholder="Введіть прохідний поріг"
           />
-          <button type="button" onClick={Save}>
+          <Button variant="primary" type="button" className="form-inputs__button-save" onClick={Save}>
             Згенерувати
-          </button>
-        </div>
+          </ Button>
+        </ div>
       </div>
+      </Form>
+        {renderTable}
+      </>
     );
 }
