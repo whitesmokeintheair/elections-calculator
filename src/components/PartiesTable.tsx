@@ -1,61 +1,63 @@
 import React, { useEffect, useState } from 'react';
 import {Table} from 'react-bootstrap';
 import QuotaInput from './QuotaInput';
+import { PartiesTableData } from './PartiesInputs';
 
-// type PartiesTableProps = {
-//   parties: string[],
-//   districts: number[],
-//   threshold: number
-// }
+type PartiesTableProps = {
+  data: PartiesTableData
+}
 
-export default function PartiesTable(props: any) {
-  const { data: {districts, parties, threshold} } = props;
-  console.log('props', props);
+export default function PartiesTable(props: PartiesTableProps) {
+  const { data: {districts, parties, threshold, table = new Map()} } = props;
 
   const districtsVotes = [25000, 15450, 3600];
 
   const [votesSum, setVotesSum] = useState(new Array(parties.length).fill(0));
 
-  const table = new Map();
-  parties.forEach((party: any) => {
-    table.set(party, new Array(districts.length).fill(0));
-  });
-
-  function handlePercentInput(e: any, index: number, party: string) {
+  function handlePercentInput(e: any, partyIndex: number,partyVotesByDistrictsIndex:number, party: string) {
     let inputValue = Number.parseInt(e.target.innerText);
     let tableRow = table.get(party);
     let votesInput = e.target.nextSibling;
 
-    let allDistrictVotes = districtsVotes[index];
+    let allDistrictVotes = districtsVotes[partyVotesByDistrictsIndex];
 
     let votesNumber = countVotesFromPercent(inputValue, allDistrictVotes);
     votesInput.innerText = votesNumber;
-    tableRow[index] = votesNumber;
-    console.log(tableRow);
+    tableRow[partyVotesByDistrictsIndex] = votesNumber;
+    updateMap(party, tableRow);
+
+    let sum = countVotesForParties(tableRow);
+    console.log('sum', sum);
+    let votesForParty = votesSum;
+    votesForParty[partyIndex] = sum;
+
+    setVotesSum([...votesForParty]);
   }
 
   const countVotesFromPercent = (percent: number, allDistrictVotes: number) => {
-    console.log(allDistrictVotes);
     return Math.floor(percent/100 * allDistrictVotes);
   }
 
-  function handleVotesInput(e: any, index: number, party: string) {
+  const updateMap = (key: string, value: any) => {
+    table.set(key,value);
+  }
+
+  function handleVotesInput(e: any, partyIndex: number, partyVotesByDistrictsIndex:number, party: string) {
     let inputValue = Number.parseInt(e.target.innerText);
     let tableRow = table.get(party);
     let percentInput = e.target.previousSibling;
-    console.log(tableRow);
-    console.log('index', index);
-    tableRow[index] = inputValue;
-    let allDistrictVotes = districtsVotes[index];
+
+    tableRow[partyVotesByDistrictsIndex] = inputValue;
+
+    updateMap(party, tableRow);
+    let allDistrictVotes = districtsVotes[partyVotesByDistrictsIndex];
     let sum = countVotesForParties(tableRow);
     let votesForParty = votesSum;
-    votesForParty[index] = sum;
-    console.log('inhandler', votesForParty);
-    console.log('init', votesSum);
+    votesForParty[partyIndex] = sum;
+
     setVotesSum([...votesForParty]);
-    console.log('after', votesSum);
+
     percentInput.innerText = countPercent(inputValue, allDistrictVotes);
-    console.log(table);
   }
 
   const countVotesForParties = (row: any) => {
@@ -70,27 +72,26 @@ export default function PartiesTable(props: any) {
     return Math.floor(percentOf * 100 / percentFrom);
   }
 
-  const renderInputRows = (party: any, index: number) =>{
+  const renderInputRows = (party: any, partyIndex: number) =>{
     const tableInputs= new Array();
     
-    table.get(party).map((value: any, index: number)=>{
+    table.get(party).map((value: any, partyVotesByDistrictsIndex: number)=>{
       tableInputs.push(
       <>
       <td contentEditable
       onBlur={
-        e => handlePercentInput(e, index, party)
+        e => handlePercentInput(e, partyIndex, partyVotesByDistrictsIndex, party)
         }>%</td>
       <td contentEditable 
       onBlur={
-        e => handleVotesInput(e, index, party)
+        e => handleVotesInput(e, partyIndex, partyVotesByDistrictsIndex, party)
       }>{value}</td>
       </>)
     })
-    tableInputs.push(<td>{votesSum[index]}</td>)
+    tableInputs.push(<td>{votesSum[partyIndex]}</td>)
 
     return tableInputs;
   }
-  console.log('table', table);
   return(
     <>
     <Table striped bordered size="sm">
