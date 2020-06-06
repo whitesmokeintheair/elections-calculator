@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {Table} from 'react-bootstrap';
+import QuotaInput from './QuotaInput';
 
 // type PartiesTableProps = {
 //   parties: string[],
@@ -91,6 +92,7 @@ export default function PartiesTable(props: any) {
   }
   console.log('table', table);
   return(
+    <>
     <Table striped bordered size="sm">
       <thead>
         <tr>
@@ -114,5 +116,6 @@ export default function PartiesTable(props: any) {
         </tr>
       </tfoot>
     </Table>
+    </>
   )
 }

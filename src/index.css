@@ -5,3 +5,28 @@ td{
 .container{
   width: 70%;
 }
+
+.form-inputs,
+.quota-form {
+  display: flex;
+  justify-content: space-between;
+}
+
+.form-inputs__right, 
+.form-inputs__left {
+  width: 40%;
+}
+
+.input {
+  margin: 20px 0;
+}
+
+.form-inputs__button-save,
+.button-calculate {
+  float: right;
+  margin: 20px 0;
+}
+
+.button-plus {
+  margin-bottom: 20px 0;
+}
