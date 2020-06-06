@@ -10,6 +10,7 @@ td{
 .quota-form {
   display: flex;
   justify-content: space-between;
+  margin-bottom: 40px;
 }
 
 .form-inputs__right, 
@@ -29,4 +30,9 @@ td{
 
 .button-plus {
   margin-bottom: 20px 0;
+}
+
+.quota {
+  font-size: 20px;
+  font-weight: bold;
 }
