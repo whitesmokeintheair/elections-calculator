@@ -1,20 +1,32 @@
-import React, { useEffect, useState } from 'react';
-import {Table} from 'react-bootstrap';
-import QuotaInput from './QuotaInput';
-import { PartiesTableData } from './PartiesInputs';
+import React, { useState } from "react";
+import { Table } from "react-bootstrap";
+import QuotaInput from "./QuotaInput";
+import { PartiesTableData } from "./PartiesInputs";
 
 type PartiesTableProps = {
-  data: PartiesTableData
-}
+  data: PartiesTableData;
+};
 
 export default function PartiesTable(props: PartiesTableProps) {
-  const { data: {districts, parties, threshold, table = new Map()} } = props;
+  const {
+    data: { districts, parties, threshold, table = new Map<string, any[]>() }
+  } = props;
+
+  console.log(table)
 
   const districtsVotes = [25000, 15450, 3600];
 
   const [votesSum, setVotesSum] = useState(new Array(parties.length).fill(0));
+  const allVotes = sumVotesForParties(votesSum);
+  const thresholdVotes = countVotesFromPercent(threshold, allVotes);
+  console.log(allVotes);
 
-  function handlePercentInput(e: any, partyIndex: number,partyVotesByDistrictsIndex:number, party: string) {
+  function handlePercentInput(
+    e: any,
+    partyIndex: number,
+    partyVotesByDistrictsIndex: number,
+    party: string
+  ) {
     let inputValue = Number.parseInt(e.target.innerText);
     let tableRow = table.get(party);
     let votesInput = e.target.nextSibling;
@@ -23,35 +35,40 @@ export default function PartiesTable(props: PartiesTableProps) {
 
     let votesNumber = countVotesFromPercent(inputValue, allDistrictVotes);
     votesInput.innerText = votesNumber;
-    tableRow[partyVotesByDistrictsIndex] = votesNumber;
+    if (tableRow) tableRow[partyVotesByDistrictsIndex] = votesNumber;
     updateMap(party, tableRow);
 
-    let sum = countVotesForParties(tableRow);
-    console.log('sum', sum);
+    let sum = sumVotesForParties(tableRow);
+    console.log("sum", sum);
     let votesForParty = votesSum;
     votesForParty[partyIndex] = sum;
 
     setVotesSum([...votesForParty]);
   }
 
-  const countVotesFromPercent = (percent: number, allDistrictVotes: number) => {
-    return Math.floor(percent/100 * allDistrictVotes);
-  }
+  function countVotesFromPercent(percent: number, allVotes: number) {
+    return Math.floor((percent / 100) * allVotes);
+  };
 
   const updateMap = (key: string, value: any) => {
-    table.set(key,value);
-  }
+    table.set(key, value);
+  };
 
-  function handleVotesInput(e: any, partyIndex: number, partyVotesByDistrictsIndex:number, party: string) {
+  function handleVotesInput(
+    e: any,
+    partyIndex: number,
+    partyVotesByDistrictsIndex: number,
+    party: string
+  ) {
     let inputValue = Number.parseInt(e.target.innerText);
     let tableRow = table.get(party);
     let percentInput = e.target.previousSibling;
 
-    tableRow[partyVotesByDistrictsIndex] = inputValue;
+    if(tableRow) tableRow[partyVotesByDistrictsIndex] = inputValue;
 
     updateMap(party, tableRow);
     let allDistrictVotes = districtsVotes[partyVotesByDistrictsIndex];
-    let sum = countVotesForParties(tableRow);
+    let sum = sumVotesForParties(tableRow);
     let votesForParty = votesSum;
     votesForParty[partyIndex] = sum;
 
@@ -60,63 +77,85 @@ export default function PartiesTable(props: PartiesTableProps) {
     percentInput.innerText = countPercent(inputValue, allDistrictVotes);
   }
 
-  const countVotesForParties = (row: any) => {
+  function sumVotesForParties(row: any) {
     let sum = 0;
-    row.forEach((votes: number)=>{
+    row.forEach((votes: number) => {
       sum += votes;
-    })
+    });
     return sum;
-  }
+  };
 
   const countPercent = (percentOf: number, percentFrom: number) => {
-    return Math.floor(percentOf * 100 / percentFrom);
-  }
+    return Math.floor((percentOf * 100) / percentFrom);
+  };
 
-  const renderInputRows = (party: any, partyIndex: number) =>{
-    const tableInputs= new Array();
-    
-    table.get(party).map((value: any, partyVotesByDistrictsIndex: number)=>{
+  const renderInputRows = (party: any, partyIndex: number) => {
+    const tableInputs = new Array();
+    const tableRow = table.get(party);
+    if (!tableRow) return null;
+
+    tableRow.map((value: any, partyVotesByDistrictsIndex: number) => {
       tableInputs.push(
-      <>
-      <td contentEditable
-      onBlur={
-        e => handlePercentInput(e, partyIndex, partyVotesByDistrictsIndex, party)
-        }>%</td>
-      <td contentEditable 
-      onBlur={
-        e => handleVotesInput(e, partyIndex, partyVotesByDistrictsIndex, party)
-      }>{value}</td>
-      </>)
-    })
-    tableInputs.push(<td>{votesSum[partyIndex]}</td>)
+        <>
+          <td
+            contentEditable
+            onBlur={e =>
+              handlePercentInput(
+                e,
+                partyIndex,
+                partyVotesByDistrictsIndex,
+                party
+              )
+            }
+          >
+            %
+          </td>
+          <td
+            contentEditable
+            onBlur={e =>
+              handleVotesInput(e, partyIndex, partyVotesByDistrictsIndex, party)
+            }
+          >
+            {value}
+          </td>
+        </>
+      );
+    });
+    tableInputs.push(<td>{votesSum[partyIndex]}</td>);
 
     return tableInputs;
-  }
-  return(
+  };
+  return (
     <>
-    <Table striped bordered size="sm">
-      <thead>
-        <tr>
-          <th></th>
-          {districts.map((district: any)=><th colSpan={2}>{district}</th>)}
-          <th>Всього:</th>
-        </tr>
-      </thead>
-      <tbody>
-        {parties.map((party:any, index: number)=>
-        <tr>
-          <td>{party}</td>
-          {renderInputRows(party, index)}
-        </tr>)}
-      </tbody>
-      <tfoot>
-        <tr>
-          <td>Всього:</td>
-          {districtsVotes.map((votes) => <td colSpan={2}>{votes}</td>)}
-          <td></td>
-        </tr>
-      </tfoot>
-    </Table>
+      <Table striped bordered size="sm">
+        <thead>
+          <tr>
+            <th></th>
+            {districts.map((district: any) => (
+              <th colSpan={2}>{district}</th>
+            ))}
+            <th>Всього:</th>
+          </tr>
+        </thead>
+        <tbody>
+          {parties.map((party: any, index: number) => (
+            <tr>
+              <td>{party}</td>
+              {renderInputRows(party, index)}
+            </tr>
+          ))}
+        </tbody>
+        <tfoot>
+          <tr>
+            <td>Всього:</td>
+            {districtsVotes.map(votes => (
+              <td colSpan={2}>{votes}</td>
+            ))}
+            <td></td>
+          </tr>
+        </tfoot>
+      </Table>
+      <QuotaInput/>
     </>
-  )
+  );
 }
