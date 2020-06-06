@@ -13,6 +13,11 @@ let inputsValue : PartiesTableProps = {
     districts: [],
     threshold: 0
 };
+
+const isInputs = () => {
+  console.log(!!(inputsValue.districts.length && inputsValue.parties.length && inputsValue.threshold))
+  return !!(inputsValue.districts.length && inputsValue.parties.length && inputsValue.threshold)
+}
   
 function Input(props: any) {
     function Change(event: any) {
@@ -32,12 +37,12 @@ function Input(props: any) {
 }
   
 export default function PartiesInputs() {
-    const [arrayInputs, setInputs] = useState([<Input name={0} />]);
+    const [arrayInputs, setInputs] = useState([<Input key='0' name={0} />]);
     const [clickSave, setClickSave] = useState(false);
     const renderTable = useMemo(() => <PartiesTable data={inputsValue}/>, [clickSave])
     
     function AddInput() {
-      setInputs(arrayInputs.concat(<Input name={arrayInputs.length} />));
+      setInputs(arrayInputs.concat(<Input key={arrayInputs.length + 1} name={arrayInputs.length} />));
     }
 
     function Save() {
@@ -83,7 +88,7 @@ export default function PartiesInputs() {
         </ div>
       </div>
       </Form>
-        {inputsValue.parties.length !== 0 && renderTable}
+        {isInputs() && renderTable}
       </>
     );
 }
