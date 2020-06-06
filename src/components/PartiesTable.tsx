@@ -1,9 +1,10 @@
 import React from 'react';
 import {Table} from 'react-bootstrap';
+import QuotaInput from './QuotaInput';
 
 export default function PartiesTable(props: any) {
   const { data: {districts, parties, threshold }} = props;
-
+  console.log(props);
   const districtsVotes = [25000, 15450, 3600];
 
   const table = new Map();
@@ -34,6 +35,7 @@ export default function PartiesTable(props: any) {
   }
 
   return(
+    <>
     <Table striped bordered size="sm">
   <thead>
     <tr>
@@ -58,5 +60,7 @@ export default function PartiesTable(props: any) {
     </tr>
   </tfoot>
 </Table>
+<QuotaInput />
+</>
   )
 }
