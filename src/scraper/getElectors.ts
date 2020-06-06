@@ -17,7 +17,7 @@ export const getOrLoadAllElectors = async () => {
   const districtVotes = {} as any
   trs.map((_, tr) => { 
     const district = tr.children[3].children[0].children[0].data?.substr(5) || 'unknow'
-    const voters = tr.children[5].children[0].data
+    const voters = parseInt(tr.children[5].children[0].data?.replace(/ +/g, '').trim() || '0');
     districtVotes[district] = voters
   })
   store.set(VOTERS_KEY, districtVotes)

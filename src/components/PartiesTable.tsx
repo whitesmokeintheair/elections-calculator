@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {Table} from 'react-bootstrap';
 import { getElectorsCounts } from '../scraper/getElectorsCount'
 import QuotaInput from './QuotaInput';
+import { PartiesTableData } from './PartiesInputs';
 
 type PartiesTableProps = {
   data: PartiesTableData;
@@ -16,11 +17,12 @@ export default function PartiesTable(props: PartiesTableProps) {
   const [votesSum, setVotesSum] = useState(new Array(parties.length).fill(0));
   const allVotes = sumVotesForParties(votesSum);
   const thresholdVotes = countVotesFromPercent(threshold, allVotes);
-  console.log(allVotes);
 
   useEffect(() => {
-    getElectorsCounts(districts).then((votes) => setDistrictsVotes(votes))
-    console.log(districts)
+    getElectorsCounts(districts).then((votes) => {
+      console.log(votes)
+      setDistrictsVotes(votes)
+    })
   }, [ districts ])
 
   function handlePercentInput(
@@ -92,7 +94,7 @@ export default function PartiesTable(props: PartiesTableProps) {
   };
 
   const renderInputRows = (party: any, partyIndex: number) => {
-    const tableInputs = new Array();
+    const tableInputs = [];
     const tableRow = table.get(party);
     if (!tableRow) return null;
 
