@@ -1,7 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {Form, Button} from 'react-bootstrap';
+import QuotaTable from './QuotaTable';
+
+const data = {
+    parties: ['OC', 'MOD', 'react'],
+    districts: [123, 124, 125],
+    threshold: 123
+}
 
 export default function OuotaInput() {
+    const [clickCalculate, setClickCalculate] = useState(false);
+    const renderTable = useMemo(() => <QuotaTable data={data}/>, [clickCalculate])
     let mandate = 0;
 
     function getValueMandate(event: any) {
@@ -9,7 +18,7 @@ export default function OuotaInput() {
     }
 
     function CalculateTable() {
-        console.log(mandate);
+        setClickCalculate(clickCalculate => !clickCalculate);
     }
 
     return (
@@ -25,10 +34,11 @@ export default function OuotaInput() {
                 </div>
                 <div className="form-inputs__left">
                 <Button variant="primary" type="button" className="button-calculate" onClick={CalculateTable}>
-                Розрахувати
+                {clickCalculate ? 'Скасувати' : 'Розрахувати'}
                 </ Button>
                 </div>
             </Form>
+            {clickCalculate && renderTable}
         </>
     )
 }
