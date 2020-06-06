@@ -117,6 +117,7 @@ export default function PartiesTable(props: PartiesTableProps) {
         </tr>
       </tfoot>
     </Table>
+    <QuotaInput />
     </>
-  )
+  );
 }

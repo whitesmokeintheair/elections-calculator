@@ -1,35 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import {Table, Button} from 'react-bootstrap';
-import {Modal} from 'react-bootstrap';
+import ModalWindow from './ModalWindow';
 
-function ModalExample(props: any) {
-  
-    return (
-    <Modal
-      {...props}
-      size="lg"
-      aria-labelledby="contained-modal-title-vcenter"
-      centered
-    >
-      <Modal.Header closeButton>
-        <Modal.Title id="contained-modal-title-vcenter">
-          Modal heading
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <h4>Centered Modal</h4>
-        <p>
-          Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
-          dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac
-          consectetur ac, vestibulum at eros.
-        </p>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button onClick={props.onHide}>Close</Button>
-      </Modal.Footer>
-    </Modal>
-  );
-  }
 
 export default function QuotaTable(props: any) {
     const { data: {districts, parties, threshold }} = props;
@@ -71,7 +43,7 @@ export default function QuotaTable(props: any) {
             </tfoot>
         </Table>
         <button type="button" onClick={showModal}>Modal</button>
-        {show && <ModalExample show={show}
+        {show && <ModalWindow show={show}
         onHide={() => setShow(false)} />}
     </>
     );
