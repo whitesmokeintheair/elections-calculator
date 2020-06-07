@@ -1,23 +1,25 @@
 import {Modal, Tab} from 'react-bootstrap';
 import {Button, Form} from 'react-bootstrap';
 import React, { useState } from 'react';
-import Tabs from 'react-bootstrap/Tabs'
+import Tabs from 'react-bootstrap/Tabs';
+
+let voices = [];
 
 export default function ModalWindow(props: any) {
   const [clickCalculate, setClickCalculate] = useState(false);
   const [key, setKey] = useState("everybody");
 
-  //тут обработать голоса каждого кандидата
+  
   function CalcualteVoiceCandidate() {
     setClickCalculate(clickCalculate => !clickCalculate);
     setKey(key => "rezult");
-    console.log(clickCalculate)
+    
   }
 
   return (
     <Modal
       {...props}
-      size="lg"
+      size="md"
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
@@ -43,8 +45,12 @@ export default function ModalWindow(props: any) {
   );
 }
 
-//сюда передать пропсом кандидатов 
+
 function AddCandidate(){
+  function getVoiceCandidate (event: any) {
+    
+  }
+
   return (
     <div className="person-voice">
         <div className="form-inputs__left">
@@ -53,7 +59,8 @@ function AddCandidate(){
         <div className="form-inputs__right">
           <Form.Control type="text"
                  className="input"
-                 placeholder="Голоси"/>
+                 placeholder="Голоси"
+                 onChange={getVoiceCandidate}/>
         </div>
     </div>
   );

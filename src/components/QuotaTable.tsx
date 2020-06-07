@@ -1,13 +1,20 @@
 import React, { useMemo, useState } from 'react';
 import {Table, Button} from 'react-bootstrap';
 import ModalWindow from './ModalWindow';
-
+import CandidatesList from './CandidatesList';
+let data = ['OC', 'PMC', 'MON']
 
 export default function QuotaTable(props: any) {
     const { data: {districts, parties, threshold }} = props;
-    const [show, setShow] = useState(false);
+    const [modal, setShow] = useState(false);
+    const [listCandidates, setListCandidates] = useState(false) 
+
     function showModal() {
-        setShow(show => !show);
+        setShow(modal => !modal);
+    }
+
+    function showListCandidates() {
+        setListCandidates(listCandidates => !listCandidates);
     }
     return(
         <>
@@ -42,9 +49,12 @@ export default function QuotaTable(props: any) {
             </tr>
             </tfoot>
         </Table>
-        <button type="button" onClick={showModal}>Modal</button>
-        {show && <ModalWindow show={show}
-        onHide={() => setShow(false)} />}
+        {/* <button type="button" onClick={showModal}>Modal</button>
+        {modal && <ModalWindow show={modal}
+        onHide={() => setShow(false)} />} */}
+        <Button className="button-list" type="button" onClick={showListCandidates}>Cписок партій</Button>
+        {listCandidates && <CandidatesList parties={data}/>}
+
     </>
     );
 }
