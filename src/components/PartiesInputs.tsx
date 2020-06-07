@@ -51,8 +51,9 @@ export default function PartiesInputs() {
   const fillTable = () => {
     inputsValue.parties.forEach((party: string) => {
       const tableRow = inputsValue.table.get(party)
-
-      if (!tableRow) {
+      console.log(tableRow)
+      if (!tableRow || tableRow.length === 0) {
+        console.log(tableRow)
         inputsValue.table.set(
           party,
           new Array(inputsValue.districts.length).fill(0)
