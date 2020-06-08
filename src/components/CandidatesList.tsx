@@ -96,7 +96,7 @@ export function CandidatesList(props: Props) {
             </Tab>)}
         </Tabs>
         <Button variant="outline-primary" type="button" className="button-plus candidat-plus" onClick={addInputsToTable}>+</Button>
-        <div className='d-flex w-100 justify-content-space-between'>
+        <div className='d-flex w-100 justify-content-between'>
             <Button
               variant="outline-primary"
               type="button"
@@ -111,10 +111,9 @@ export function CandidatesList(props: Props) {
             >
               Обнулити список
             </Button>
-            <Button variant="outline-primary" type="button" className="button-save" onClick={() => saveInStore(parties[key], candidatsByParty)}>Зберегти список</Button>
+            <Button variant="outline-primary" type="button" className="button-save" onClick={() => saveInStore(parties[key], candidatsByParty)}>Обновити список</Button>
         </div>
         </div>
-        <Button variant="primary" type="button" className="add-candidates-to-table">Додати в таблицю</Button>
         </>
     );
 }
