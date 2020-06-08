@@ -1,7 +1,6 @@
-import React from 'react';
-import PartiesTable from './PartiesTable';
-import PartiesInputs from './PartiesInputs';
+import React from "react";
+import PartiesInputs from "./PartiesInputs";
 
 export default function MainPage() {
-  return (<PartiesInputs/>)
+  return <PartiesInputs />;
 }
