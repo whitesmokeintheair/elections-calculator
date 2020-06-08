@@ -29,7 +29,13 @@ export default function QuotaTable(props: any) {
     let summedMandates: number[] = [];
     allParties.forEach((party, partyIndex) => {
       if(parties.includes(party)){
-        const votesForPartyArray = votesTabletableInputsstrict);
+        const votesForPartyArray = votesTable.get(party);
+        const mandatesForDistrictsArray: number[] = [];
+        let mandatesForDistrict = 0;
+        if(votesForPartyArray)
+        votesForPartyArray.forEach((votes) => {
+          mandatesForDistrict = Math.floor(votes/quota);
+          mandatesForDistrictsArray.push(mandatesForDistrict);
         })
         summedMandates[partyIndex] = getSum(mandatesForDistrictsArray);
         mandatesSum = summedMandates;
