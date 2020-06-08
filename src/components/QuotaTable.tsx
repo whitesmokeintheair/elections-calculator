@@ -62,16 +62,16 @@ export default function QuotaTable(props: any) {
           })
         }
         //считаем доп.голоса
-        let additionalVotes: number[] = [];
+        const additionalVotes: number[] = [];
         votesForPartyValues.forEach((votesForParty, partyIndex) => {
-          let mandatesForParty = mandatesForPartyValues[partyIndex];
+          const mandatesForParty = mandatesForPartyValues[partyIndex];
           additionalVotes.push(votesForParty - (quota * mandatesForParty));
         })
         //считаем сумму
-        let additionalVotesSum = getSum(additionalVotes);
-        let addMandates = Math.floor(additionalVotesSum/ quota);
-        additionalMandates.push(addMandates);
-        let addMandatesSum = mandatesSum[partyIndex] + addMandates;
+        const additionalVotesSum = getSum(additionalVotes);
+        const addMandates = Math.ceil(additionalVotesSum/ quota);
+        additionalMandates[partyIndex] = addMandates;
+        const addMandatesSum = mandatesSum[partyIndex] + addMandates;
         additionalMandatesWithMandatesSum[partyIndex] = addMandatesSum;
       }
     })
@@ -88,25 +88,26 @@ export default function QuotaTable(props: any) {
     const tableRow = passingParties.get(party);
     if (!tableRow) return null;
 
-    tableRow.map((value: any) => {
-      tds.push(<td>{value}</td>);
+    console.log(mandatesSum[partyIndex])
+    tableRow.forEach((value: any, i: number) => {
+      tds.push(<td key={`mandats-for-${party}-${i}`}>{value}</td>);
     });
-    tds.push(<td>{mandatesSum[partyIndex]}</td>);
-    tds.push(<td>{additionalMandates[partyIndex]}</td>);
-    tds.push(<td>{additionalMandatesWithMandatesSum[partyIndex]}</td>);
+    tds.push(<td key={`mandats-sum-for-${party}`}>{mandatesSum[partyIndex]}</td>);
+    tds.push(<td key={`additional-mandats-for-${party}`}>{additionalMandates[partyIndex]}</td>);
+    tds.push(<td key={`all-mandats-for-${party}`}>{additionalMandatesWithMandatesSum[partyIndex]}</td>);
 
     return tds;
   };
 
   return (
     <>
-      <p className="quota">Квота:</p>
+      <p className="quota">Квота: {quota}</p>
       <Table striped bordered size="sm">
         <thead>
           <tr>
             <th></th>
-            {districts.map((district: any) => (
-              <th>{district}</th>
+            {districts.map((district) => (
+              <th key={`disctrict-number-${district}`}>{district}</th>
             ))}
             <th>Всього:</th>
             <th>Додатково:</th>
@@ -115,7 +116,7 @@ export default function QuotaTable(props: any) {
         </thead>
         <tbody>
           {parties.map((party: any, partyIndex: number) => (
-            <tr>
+            <tr key={`table-rows-for-${party}`} >
               <td>{party}</td>
               {renderRows(party, partyIndex)}
             </tr>
