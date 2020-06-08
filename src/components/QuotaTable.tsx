@@ -88,21 +88,16 @@ export default function QuotaTable(props: any) {
     const tableRow = passingParties.get(party);
     if (!tableRow) return null;
 
-    console.log(mandatesSum[partyIndex])
     tableRow.forEach((value: any, i: number) => {
       tds.push(<td onClick={() => {
-        console.log('I in onClick')
         const allCandidatsList = candidatsByParty.get(party)
-        console.log(allCandidatsList)
         const currentDistrict = districts[i].toString()
         const candidatsByDistrict = allCandidatsList && allCandidatsList.filter(x => x.district === currentDistrict)
 
-        console.log(candidatsByDistrict)
         if (!candidatsByDistrict || !candidatsByDistrict.length)
           return alert(`Немає жодного депутата від партії ${party} на окрузі №${currentDistrict}`)
         
         candidatsByDistrict.sort((a, b) => parseInt(a.number) - parseInt(b.number))
-        console.log(candidatsByDistrict)
         setCandidatsByDistrict([ ...candidatsByDistrict ])
         setMandatesCount(value)
         setModalShow(true)

@@ -28,7 +28,6 @@ export default function PartiesTable(props: PartiesTableProps) {
 
   useEffect(() => {
     getElectorsCounts(districts).then((votes) => {
-      console.log(votes)
       setDistrictsVotes(votes)
     })
   }, [ districts ])
@@ -65,7 +64,6 @@ export default function PartiesTable(props: PartiesTableProps) {
     allVotesForParties = getSum(partiesVotesSum);
     thresholdVotes = countVotesWithPercent(threshold, allVotesForParties);
 
-    console.log('here pass', passingParties);
     countPassingPartiesVotes();
 
     setPartiesVotesSum([...votesForParty]);

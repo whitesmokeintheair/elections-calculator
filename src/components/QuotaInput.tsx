@@ -23,7 +23,6 @@ export default function OuotaInput(props: any) {
             party,
             new Array(inputsValue.districts.length).fill(0)
           );
-          console.log("kek", thresholdVotes);
         }
       }
     });

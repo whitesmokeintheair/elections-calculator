@@ -16,7 +16,6 @@ export default function ModalWindow({ hide, candidatsByDistrict, quota, mandates
   const [key, setKey] = useState<string>('everybody');
   const [ calculateClick, setCalculateClick ] = useState(false)
   const [ results, setResults ] = useState<CandidatType[]>([])
-  console.log(candidatsByDistrict)
   
   function CalcualteVoiceCandidate() {
     setCalculateClick(!calculateClick)
@@ -28,12 +27,9 @@ export default function ModalWindow({ hide, candidatsByDistrict, quota, mandates
     
     const winnersCount = wins.length
 
-    console.log(wins, winnersCount)
-
     if (winnersCount < mandatesCount)
       wins.push(...other.slice(0, mandatesCount - winnersCount))
 
-    console.log(wins, winnersCount)
     setResults([ ...wins ])
     
   }, [candidatsByDistrict, quota, calculateClick, mandatesCount])
