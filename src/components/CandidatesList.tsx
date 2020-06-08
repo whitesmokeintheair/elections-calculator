@@ -2,17 +2,18 @@ import {Tab} from 'react-bootstrap';
 import {Button, Form} from 'react-bootstrap';
 import React, { useState } from 'react';
 import Tabs from 'react-bootstrap/Tabs';
+import store from 'store'
 
 let candidatsByParty = new Map<string, any[]>();
 
-type Props = {
+type InputProps = {
     indexOfInput: string,
     nameOfParty: string
 }
 
 type InputValue = 'name' | 'district' | 'number'
 
-const getValueForInput = ({ indexOfInput, nameOfParty }: Props, type: InputValue) => {
+const getValueForInput = ({ indexOfInput, nameOfParty }: InputProps, type: InputValue) => {
     const candidatsArray = candidatsByParty.get(nameOfParty)
     if (!candidatsArray) return undefined;
 
@@ -21,13 +22,29 @@ const getValueForInput = ({ indexOfInput, nameOfParty }: Props, type: InputValue
     return candidat ? candidat[type] : undefined
 }
 
-export default function CandidatesList(props: any) {
+const saveInStore = (party: string) => {
+  const candidatesList = candidatsByParty.get(party)
+
+  if (!candidatesList) return
+
+  store.set(party, candidatesList)
+}
+
+const deleteFromStore = (party: string) => {
+  store.remove(party)
+}
+
+type Props = {
+  parties: string[]
+}
+
+export default function CandidatesList({ parties }: any) {
     const [key, setKey] = useState('0');
-    const [arrayInputs, setArrayInputs] = useState(props.parties.map((party: any)=>[<InputsParty key='0' indexOfInput={'0'} nameOfParty={party}/>]));
+    const [arrayInputs, setArrayInputs] = useState(parties.map((party: any)=>[<InputsParty key='0' indexOfInput={'0'} nameOfParty={party}/>]));
 
     function addInputsToTable() {
         const index = arrayInputs[key].length
-        arrayInputs[key].push(<InputsParty key={index} indexOfInput={index} nameOfParty={props.parties[key]} />)
+        arrayInputs[key].push(<InputsParty key={index} indexOfInput={index} nameOfParty={parties[key]} />)
         setArrayInputs([ ...arrayInputs ]);
     }
 
@@ -39,20 +56,34 @@ export default function CandidatesList(props: any) {
         activeKey={key}
         onSelect={(k: React.SetStateAction<string>) => setKey(k)}
         >
-            {props.parties.map((party: any)=> <Tab key={party} eventKey={props.parties.indexOf(party)} title={party}>
+            {parties.map((party: any)=> <Tab key={party} eventKey={parties.indexOf(party)} title={party}>
                 {arrayInputs[key]}
             </Tab>)}
         </Tabs>
         <Button variant="outline-primary" type="button" className="button-plus candidat-plus" onClick={addInputsToTable}>+</Button>
-        <Button variant="outline-primary" type="button" className="button-cancel">Скасувати</Button>
-        <Button variant="outline-primary" type="button" className="button-save">Зберегти</Button>
+        <div className='d-flex w-100 justify-content-space-between'>
+            <Button
+              variant="outline-primary"
+              type="button"
+              className="button-cancel"
+              onClick={() => {
+                const party = parties[key];
+                deleteFromStore(party)
+                arrayInputs[key] = [<InputsParty key='0' indexOfInput={'0'} nameOfParty={party}/>]
+                setArrayInputs([ ...arrayInputs ]);
+            }}
+            >
+              Обнулити список
+            </Button>
+            <Button variant="outline-primary" type="button" className="button-save" onClick={() => saveInStore(parties[key])}>Зберегти список</Button>
+        </div>
         </div>
         <Button variant="primary" type="button" className="add-candidates-to-table">Додати в таблицю</Button>
         </>
     );
 }
 
-function InputsParty(props: Props) {
+function InputsParty(props: InputProps) {
 
     function getValue(event: any, type: 'name' | 'district' | 'number'){
         let newArray = candidatsByParty.get(props.nameOfParty);
