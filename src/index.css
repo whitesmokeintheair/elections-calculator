@@ -7,13 +7,32 @@ td {
 }
 
 .form-inputs,
-.quota-form {
+.quota-form,
+.person-voice {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 40px;
 }
 
-.form-inputs__right,
+.candidat-info {
+  display: flex;
+  justify-content: space-around;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  float: left;
+}
+
+.person-voice {
+  align-items: center;
+}
+
+.name-candidate {
+  margin: 0 0 0 20px;
+}
+
+.form-inputs__right, 
 .form-inputs__left {
   width: 40%;
 }
@@ -23,7 +42,9 @@ td {
 }
 
 .form-inputs__button-save,
-.button-calculate {
+.button-calculate,
+.button-list,
+.add-candidates-to-table {
   float: right;
   margin: 20px 0;
 }
@@ -36,3 +57,34 @@ td {
   font-size: 20px;
   font-weight: bold;
 }
+
+.candidates-list {
+  margin-top: 100px;
+  padding-bottom: 60px;
+  background-color: #f2f2f2;
+  height: auto;
+}
+
+.candidat-info__name {
+  width: 30%;
+}
+
+.candidat-info__district {
+  width: 20%;
+}
+
+.candidat-info__number {
+  width: 20%;
+}
+
+.candidat-plus {
+  margin-left: 5%;
+}
+
+.button-cancel,
+.button-save {
+  float: right;
+  margin: 0 5%;
+  margin-top: 40px;
+}
+

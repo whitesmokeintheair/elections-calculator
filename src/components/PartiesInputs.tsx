@@ -31,9 +31,7 @@ function Input(props: any) {
 export default function PartiesInputs() {
   const [arrayInputs, setInputs] = useState([<Input key="0" name={0} />]);
   const [clickSave, setClickSave] = useState(false);
-  const renderTable = useMemo(() => <PartiesTable data={inputsValue} />, [
-    clickSave
-  ]);
+  const renderTable = useMemo(() => <PartiesTable data={inputsValue} />, [ clickSave ]);
 
   const fillTable = () => {
     inputsValue.parties.forEach((party: string) => {
@@ -50,7 +48,8 @@ export default function PartiesInputs() {
   };
 
   function AddInput() {
-    setInputs(arrayInputs.concat(<Input name={arrayInputs.length} />));
+    const index = arrayInputs.length
+    setInputs(arrayInputs.concat(<Input key={`inputs_parties-${index}`} name={index} />));
   }
 
   function Save() {
@@ -74,7 +73,7 @@ export default function PartiesInputs() {
       <Form>
         <div className="form-inputs">
           <div className="form-inputs__left">
-            <form className="form-inputs__parties">{arrayInputs}</form>
+            <div className="form-inputs_parties">{arrayInputs}</div>
             <Button
               variant="outline-primary"
               type="button"
