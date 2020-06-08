@@ -1,6 +1,6 @@
 import { PartiesTableData } from './types';
 
-export const passingParties = new Map();
+export const passingParties = new Map<string, any[]>();
 
 export let inputsValue: PartiesTableData = {
   parties: [],

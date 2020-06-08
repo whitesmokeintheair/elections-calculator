@@ -111,10 +111,11 @@ export default function PartiesTable(props: PartiesTableProps) {
     const tableRow = table.get(party);
     if (!tableRow) return null;
 
-    tableRow.map((value: any, partyVotesByDistrictsIndex: number) => {
+    tableRow.forEach((value: any, partyVotesByDistrictsIndex: number) => {
       tableInputs.push(
-        <>
+        <React.Fragment key={`table-input-by-${party}-${partyVotesByDistrictsIndex}`}>
           <td
+            suppressContentEditableWarning
             contentEditable
             onBlur={e =>
               handlePercentInput(
@@ -128,6 +129,7 @@ export default function PartiesTable(props: PartiesTableProps) {
             %
           </td>
           <td
+            suppressContentEditableWarning
             contentEditable
             onBlur={e =>
               handleVotesInput(e, partyIndex, partyVotesByDistrictsIndex, party)
@@ -135,40 +137,45 @@ export default function PartiesTable(props: PartiesTableProps) {
           >
             {value}
           </td>
-        </>
+        </React.Fragment>
       );
     });
-    tableInputs.push(<td>{partiesVotesSum[partyIndex]}</td>);
+    tableInputs.push(<td key={`table-inputs-by-${party}`}>{partiesVotesSum[partyIndex]}</td>);
 
     return tableInputs;
   };
 
   return (
     <>
-    <Table striped bordered size="sm">
-      <thead>
-        <tr>
-          <th></th>
-          {districts.map((district: any)=><th colSpan={2}>{district}</th>)}
-          <th>Всього:</th>
-        </tr>
-      </thead>
-      <tbody>
-        {parties.map((party:any, index: number)=>
-        <tr>
-          <td>{party}</td>
-          {renderInputRows(party, index)}
-        </tr>)}
-      </tbody>
-      <tfoot>
-        <tr>
-          <td>Всього:</td>
-          {districtsVotes.map((votes) => <td colSpan={2}>{votes}</td>)}
-          <td></td>
-        </tr>
-      </tfoot>
-    </Table>
-    <QuotaInput />
+      <Table striped bordered size="sm">
+        <thead>
+          <tr>
+            <th></th>
+            {districts.map((district) => (
+              <th key={`district-number-${district}`} colSpan={2}>{district}</th>
+            ))}
+            <th>Всього:</th>
+          </tr>
+        </thead>
+        <tbody>
+          {parties.map((party: string, index: number) => (
+            <tr key={`table-rows-for-${party}`}>
+              <td>{party}</td>
+              {renderInputRows(party, index)}
+            </tr>
+          ))}
+        </tbody>
+        <tfoot>
+          <tr>
+            <td>Всього:</td>
+            {districtsVotes.map(votes => (
+              <td key={`all-votest-${votes}`} colSpan={2}>{votes}</td>
+            ))}
+            <td></td>
+          </tr>
+        </tfoot>
+      </Table>
+      <QuotaInput partiesVotesSum={partiesVotesSum} thresholdVotes={thresholdVotes} passingPartiesVotes={passingPartiesVotes}/>
     </>
   );
 }

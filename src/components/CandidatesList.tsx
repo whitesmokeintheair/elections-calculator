@@ -2,32 +2,84 @@ import {Tab} from 'react-bootstrap';
 import {Button, Form} from 'react-bootstrap';
 import React, { useState } from 'react';
 import Tabs from 'react-bootstrap/Tabs';
+import store from 'store'
 
-let candidatsByParty = new Map<string, any[]>();
+export type CandidatType = {
+  name: string,
+  district: string,
+  number: string,
+  voters?: number,
+}
+
+export type CandidatsMap = Map<string, CandidatType[]> 
+
+type InputProps = {
+  indexOfInput: string,
+  nameOfParty: string,
+  defaultValue?: CandidatType,
+  candidatsByParty: CandidatsMap 
+}
 
 type Props = {
-    indexOfInput: string,
-    nameOfParty: string
+  parties: string[],
+  candidatsByParty: CandidatsMap
 }
 
 type InputValue = 'name' | 'district' | 'number'
 
-const getValueForInput = ({ indexOfInput, nameOfParty }: Props, type: InputValue) => {
+export const getCandidatFromMap = ({ indexOfInput, nameOfParty, candidatsByParty }: InputProps) => {
     const candidatsArray = candidatsByParty.get(nameOfParty)
     if (!candidatsArray) return undefined;
 
-    const candidat = candidatsArray[parseInt(indexOfInput)]
-
-    return candidat ? candidat[type] : undefined
+    return candidatsArray[parseInt(indexOfInput)]
 }
 
-export default function CandidatesList(props: any) {
-    const [key, setKey] = useState('0');
-    const [arrayInputs, setArrayInputs] = useState(props.parties.map((party: any)=>[<InputsParty key='0' indexOfInput={'0'} nameOfParty={party}/>]));
+const saveInStore = (party: string, candidatsByParty: CandidatsMap) => {
+  const candidatesList = candidatsByParty.get(party)
+
+  if (!candidatesList) return
+
+  store.set(party, candidatesList)
+}
+
+const deleteFromStore = (party: string) => {
+  store.remove(party)
+}
+
+export const initialCandidatsMap = (parties: string[]) => {
+  const newCandidatsMap = new Map() as CandidatsMap
+  parties.forEach(party => {
+    const candidats = store.get(party)
+    if (candidats) {
+      newCandidatsMap.set(party, candidats)
+    }
+  })
+  return newCandidatsMap
+}
+
+const initialCandidatsInputs = ({ parties, candidatsByParty }: Props) => {
+  return parties.map(party => {
+    const candidats = store.get(party)
+
+    if (candidats) {
+      candidatsByParty.set(party, candidats)
+      return candidats.map((candidat: CandidatType, i: number) =>
+        <InputsParty key={`inputs-number-${i}`} indexOfInput={i.toString()} nameOfParty={party} candidatsByParty={candidatsByParty} defaultValue={candidat}/>
+      )
+    } else {
+      return [<InputsParty key='0' indexOfInput={'0'} candidatsByParty={candidatsByParty} nameOfParty={party}/>]
+    }
+  })
+} 
+
+export function CandidatesList(props: Props) {
+    const { parties, candidatsByParty } = props
+    const [key, setKey] = useState(0);
+    const [arrayInputs, setArrayInputs] = useState(initialCandidatsInputs(props));
 
     function addInputsToTable() {
         const index = arrayInputs[key].length
-        arrayInputs[key].push(<InputsParty key={index} indexOfInput={index} nameOfParty={props.parties[key]} />)
+        arrayInputs[key].push(<InputsParty key={index} candidatsByParty={candidatsByParty} indexOfInput={index.toString()} nameOfParty={parties[key]} />)
         setArrayInputs([ ...arrayInputs ]);
     }
 
@@ -37,25 +89,41 @@ export default function CandidatesList(props: any) {
         <Tabs
         id="tab"
         activeKey={key}
-        onSelect={(k: React.SetStateAction<string>) => setKey(k)}
+        onSelect={(k: React.SetStateAction<string>) => setKey(k as unknown as number)}
         >
-            {props.parties.map((party: any)=> <Tab key={party} eventKey={props.parties.indexOf(party)} title={party}>
+            {parties.map((party: any)=> <Tab key={party} eventKey={parties.indexOf(party)} title={party}>
                 {arrayInputs[key]}
             </Tab>)}
         </Tabs>
         <Button variant="outline-primary" type="button" className="button-plus candidat-plus" onClick={addInputsToTable}>+</Button>
-        <Button variant="outline-primary" type="button" className="button-cancel">Скасувати</Button>
-        <Button variant="outline-primary" type="button" className="button-save">Зберегти</Button>
+        <div className='d-flex w-100 justify-content-between'>
+            <Button
+              variant="outline-primary"
+              type="button"
+              className="button-cancel"
+              onClick={() => {
+                const party = parties[key];
+                deleteFromStore(party)
+                arrayInputs[key] = [<InputsParty candidatsByParty={candidatsByParty} key='0' indexOfInput={'0'} nameOfParty={party}/>]
+                candidatsByParty.set(party, [])
+                setArrayInputs([ ...arrayInputs ]);
+            }}
+            >
+              Обнулити список
+            </Button>
+            <Button variant="outline-primary" type="button" className="button-save" onClick={() => saveInStore(parties[key], candidatsByParty)}>Обновити список</Button>
         </div>
-        <Button variant="primary" type="button" className="add-candidates-to-table">Додати в таблицю</Button>
+        </div>
         </>
     );
 }
 
-function InputsParty(props: Props) {
+function InputsParty(props: InputProps) {
+
+    const defaultValue = props.defaultValue || getCandidatFromMap(props)
 
     function getValue(event: any, type: 'name' | 'district' | 'number'){
-        let newArray = candidatsByParty.get(props.nameOfParty);
+        let newArray = props.candidatsByParty.get(props.nameOfParty);
         const value = event.target.value;
         
         if (!newArray) {
@@ -69,7 +137,7 @@ function InputsParty(props: Props) {
             newArray[index] = { ...candidat }
         }
         
-        candidatsByParty.set(props.nameOfParty, newArray);
+        props.candidatsByParty.set(props.nameOfParty, newArray);
     }
 
     return (
@@ -78,7 +146,7 @@ function InputsParty(props: Props) {
             <div className="candidat-info__name">
             <Form.Control type="text"
                 name={props.indexOfInput}
-                defaultValue={getValueForInput(props, 'name')}
+                defaultValue={defaultValue?.name}
                 onChange={(e) => getValue(e, 'name')}
                  className="input"
                  placeholder="ПІБ"/>
@@ -86,7 +154,7 @@ function InputsParty(props: Props) {
             <div className="candidat-info__district">
             <Form.Control type="text"
                 name={props.indexOfInput}
-                defaultValue={getValueForInput(props, 'district')}
+                defaultValue={defaultValue?.district}
                 onChange={(e) => getValue(e, 'district')}
                  className="input candidat-info__district"
                  placeholder="Округ"/>
@@ -94,7 +162,7 @@ function InputsParty(props: Props) {
             <div className="candidat-info__number">
             <Form.Control type="text"
                 name={props.indexOfInput}
-                defaultValue={getValueForInput(props, 'number')}
+                defaultValue={defaultValue?.number}
                 onChange={(e) => getValue(e, 'number')}
                  className="input candidat-info__number"
                  placeholder="Номер по округу"/>
@@ -104,3 +172,5 @@ function InputsParty(props: Props) {
         </>
     );
 }
+
+export default CandidatesList
