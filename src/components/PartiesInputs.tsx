@@ -1,20 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { Form, Button } from "react-bootstrap";
 import PartiesTable from "./PartiesTable";
-
-export type PartiesTableData = {
-  parties: string[];
-  districts: number[];
-  threshold: number;
-  table: Map<string, any[]>;
-};
-
-let inputsValue: PartiesTableData = {
-  parties: [],
-  districts: [],
-  threshold: 0,
-  table: new Map()
-};
+import { inputsValue } from "../data";
 
 const isInputs = () => {
   return !!(
@@ -64,7 +51,6 @@ export default function PartiesInputs() {
 
   function AddInput() {
     setInputs(arrayInputs.concat(<Input name={arrayInputs.length} />));
-    fillTable();
   }
 
   function Save() {

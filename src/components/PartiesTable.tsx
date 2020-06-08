@@ -2,11 +2,17 @@ import React, { useEffect, useState } from 'react';
 import {Table} from 'react-bootstrap';
 import { getElectorsCounts } from '../scraper/getElectorsCount'
 import QuotaInput from './QuotaInput';
-import { PartiesTableData } from './PartiesInputs';
+import { passingParties } from '../data';
+import { PartiesTableData } from '../types';
+import { getSum } from '../calculations';
 
 type PartiesTableProps = {
   data: PartiesTableData;
 };
+
+let allVotesForParties = 0;
+let thresholdVotes = 0;
+let passingPartiesVotes = 0;
 
 export default function PartiesTable(props: PartiesTableProps) {
   const {
@@ -14,9 +20,11 @@ export default function PartiesTable(props: PartiesTableProps) {
   } = props;
 
   const [ districtsVotes, setDistrictsVotes ] = useState<number[]>([])
-  const [votesSum, setVotesSum] = useState(new Array(parties.length).fill(0));
-  const allVotes = sumVotesForParties(votesSum);
-  const thresholdVotes = countVotesFromPercent(threshold, allVotes);
+  const [ partiesVotesSum, setPartiesVotesSum ] = useState(new Array(parties.length).fill(0));
+
+  const updateMap = (key: string, value: any) => {
+    table.set(key, value);
+  };
 
   useEffect(() => {
     getElectorsCounts(districts).then((votes) => {
@@ -24,6 +32,14 @@ export default function PartiesTable(props: PartiesTableProps) {
       setDistrictsVotes(votes)
     })
   }, [ districts ])
+
+  function countPassingPartiesVotes() {
+    partiesVotesSum.forEach((sum)=>{
+      if(sum > thresholdVotes){
+        passingPartiesVotes += sum;
+      }
+    })
+  }
 
   function handlePercentInput(
     e: any,
@@ -37,25 +53,26 @@ export default function PartiesTable(props: PartiesTableProps) {
 
     let allDistrictVotes = districtsVotes[partyVotesByDistrictsIndex];
 
-    let votesNumber = countVotesFromPercent(inputValue, allDistrictVotes);
+    let votesNumber = countVotesWithPercent(inputValue, allDistrictVotes);
     votesInput.innerText = votesNumber;
     if (tableRow) tableRow[partyVotesByDistrictsIndex] = votesNumber;
     updateMap(party, tableRow);
 
-    let sum = sumVotesForParties(tableRow);
-    console.log("sum", sum);
-    let votesForParty = votesSum;
-    votesForParty[partyIndex] = sum;
+    let sumVotesForParties = getSum(tableRow);
+    let votesForParty = partiesVotesSum;
+    votesForParty[partyIndex] = sumVotesForParties;
 
-    setVotesSum([...votesForParty]);
+    allVotesForParties = getSum(partiesVotesSum);
+    thresholdVotes = countVotesWithPercent(threshold, allVotesForParties);
+
+    console.log('here pass', passingParties);
+    countPassingPartiesVotes();
+
+    setPartiesVotesSum([...votesForParty]);
   }
 
-  function countVotesFromPercent(percent: number, allVotes: number) {
+  function countVotesWithPercent(percent: number, allVotes: number) {
     return Math.floor((percent / 100) * allVotes);
-  };
-
-  const updateMap = (key: string, value: any) => {
-    table.set(key, value);
   };
 
   function handleVotesInput(
@@ -72,28 +89,24 @@ export default function PartiesTable(props: PartiesTableProps) {
 
     updateMap(party, tableRow);
     let allDistrictVotes = districtsVotes[partyVotesByDistrictsIndex];
-    let sum = sumVotesForParties(tableRow);
-    let votesForParty = votesSum;
-    votesForParty[partyIndex] = sum;
+    let sumVotesForParties = getSum(tableRow);
+    let votesForParty = partiesVotesSum;
+    votesForParty[partyIndex] = sumVotesForParties;
 
-    setVotesSum([...votesForParty]);
+    setPartiesVotesSum([...votesForParty]);
+
+    allVotesForParties = getSum(partiesVotesSum);
+    thresholdVotes = countVotesWithPercent(threshold, allVotesForParties);
+    countPassingPartiesVotes();
 
     percentInput.innerText = countPercent(inputValue, allDistrictVotes);
   }
-
-  function sumVotesForParties(row: any) {
-    let sum = 0;
-    row.forEach((votes: number) => {
-      sum += votes;
-    });
-    return sum;
-  };
 
   const countPercent = (percentOf: number, percentFrom: number) => {
     return Math.floor((percentOf * 100) / percentFrom);
   };
 
-  const renderInputRows = (party: any, partyIndex: number) => {
+  const renderInputRows = (party: string, partyIndex: number) => {
     const tableInputs = [];
     const tableRow = table.get(party);
     if (!tableRow) return null;
@@ -125,10 +138,11 @@ export default function PartiesTable(props: PartiesTableProps) {
         </>
       );
     });
-    tableInputs.push(<td>{votesSum[partyIndex]}</td>);
+    tableInputs.push(<td>{partiesVotesSum[partyIndex]}</td>);
 
     return tableInputs;
   };
+
   return (
     <>
       <Table striped bordered size="sm">
@@ -142,7 +156,7 @@ export default function PartiesTable(props: PartiesTableProps) {
           </tr>
         </thead>
         <tbody>
-          {parties.map((party: any, index: number) => (
+          {parties.map((party: string, index: number) => (
             <tr>
               <td>{party}</td>
               {renderInputRows(party, index)}
@@ -159,7 +173,7 @@ export default function PartiesTable(props: PartiesTableProps) {
           </tr>
         </tfoot>
       </Table>
-      <QuotaInput/>
+      <QuotaInput partiesVotesSum={partiesVotesSum} thresholdVotes={thresholdVotes} passingPartiesVotes={passingPartiesVotes}/>
     </>
   );
 }
