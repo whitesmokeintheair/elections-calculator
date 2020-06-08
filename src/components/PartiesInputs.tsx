@@ -31,9 +31,7 @@ function Input(props: any) {
 export default function PartiesInputs() {
   const [arrayInputs, setInputs] = useState([<Input key="0" name={0} />]);
   const [clickSave, setClickSave] = useState(false);
-  const renderTable = useMemo(() => <PartiesTable data={inputsValue} />, [
-    clickSave
-  ]);
+  const renderTable = useMemo(() => <PartiesTable data={inputsValue} />, [ clickSave ]);
 
   const fillTable = () => {
     inputsValue.parties.forEach((party: string) => {
