@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from "react";
 import { Form, Button } from "react-bootstrap";
 import PartiesTable from "./PartiesTable";
-import { inputsValue } from "../data";
+import { inputsValue, mockInputsValue } from "../data";
+import { useSimulationContext } from "./IsSimulationContext";
 
 const isInputs = () => {
   return !!(
@@ -12,10 +13,14 @@ const isInputs = () => {
 };
 
 export default function PartiesInputs() {
+  const { isSimulation } = useSimulationContext()
+  console.log(isSimulation)
   const [valueInInput, setValueInInput] = useState('');
   const [clickSave, setClickSave] = useState(false);
   const [ listParties, setList ] = useState(inputsValue.parties)
   const renderTable = useMemo(() => <PartiesTable data={inputsValue} />, [ clickSave ]);
+
+  if (isSimulation) return <PartiesTable data={mockInputsValue} />
 
   const fillTable = () => {
     inputsValue.parties.forEach((party: string) => {

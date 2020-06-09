@@ -4,39 +4,52 @@ import { getElectorsCounts } from '../scraper/getElectorsCount'
 import QuotaInput from './QuotaInput';
 import { PartiesTableData } from '../types';
 import { getSum } from '../calculations';
+import { useSimulationContext } from './IsSimulationContext';
+import { mockDistrictsAllVoter, mockPartiesVotesSum } from '../data';
 
 type PartiesTableProps = {
   data: PartiesTableData;
 };
-
-let allVotesForParties = 0;
-let thresholdVotes = 0;
-let passingPartiesVotes = 0;
 
 export default function PartiesTable(props: PartiesTableProps) {
   const {
     data: { districts, parties, threshold, table = new Map<string, any[]>() }
   } = props;
 
+  const [ allVotesForParties, setAllVotesForParties ] = useState(0);
+  const [ thresholdVotes, setThresholdVotes ] = useState(0);
+  const [ passingPartiesVotes, setPassingPartiesVotes ] = useState(0);
+
+  const { isSimulation } = useSimulationContext()
   const [ districtsVotes, setDistrictsVotes ] = useState<number[]>([])
-  const [ partiesVotesSum, setPartiesVotesSum ] = useState(new Array(parties.length).fill(0));
+  const [ partiesVotesSum, setPartiesVotesSum ] = useState(isSimulation ? mockPartiesVotesSum : new Array(parties.length).fill(0));
 
   const updateMap = (key: string, value: any) => {
     table.set(key, value);
   };
 
   useEffect(() => {
+    if (isSimulation) {
+      setAllVotesForParties(getSum(partiesVotesSum));
+      setThresholdVotes(countVotesWithPercent(threshold, allVotesForParties));
+      countPassingPartiesVotes()
+      setDistrictsVotes(mockDistrictsAllVoter)
+      return
+    }
+
     getElectorsCounts(districts).then((votes) => {
       setDistrictsVotes(votes)
     })
   }, [ districts ])
 
   function countPassingPartiesVotes() {
+    let votersSum = 0;
     partiesVotesSum.forEach((sum)=>{
       if(sum > thresholdVotes){
-        passingPartiesVotes += sum;
+        votersSum += sum;
       }
     })
+    setPassingPartiesVotes(votersSum)
   }
 
   function handlePercentInput(
@@ -60,8 +73,8 @@ export default function PartiesTable(props: PartiesTableProps) {
     let votesForParty = partiesVotesSum;
     votesForParty[partyIndex] = sumVotesForParties;
 
-    allVotesForParties = getSum(partiesVotesSum);
-    thresholdVotes = countVotesWithPercent(threshold, allVotesForParties);
+    setAllVotesForParties(getSum(partiesVotesSum));
+    setThresholdVotes(countVotesWithPercent(threshold, allVotesForParties));
 
     countPassingPartiesVotes();
 
@@ -91,9 +104,8 @@ export default function PartiesTable(props: PartiesTableProps) {
     votesForParty[partyIndex] = sumVotesForParties;
 
     setPartiesVotesSum([...votesForParty]);
-
-    allVotesForParties = getSum(partiesVotesSum);
-    thresholdVotes = countVotesWithPercent(threshold, allVotesForParties);
+    setAllVotesForParties(getSum(partiesVotesSum));
+    setThresholdVotes(countVotesWithPercent(threshold, allVotesForParties));
     countPassingPartiesVotes();
 
     percentInput.innerText = countPercent(inputValue, allDistrictVotes);
@@ -123,7 +135,7 @@ export default function PartiesTable(props: PartiesTableProps) {
               )
             }
           >
-            %
+            {isSimulation ? countPercent(parseInt((table.get(party) as any[])[partyVotesByDistrictsIndex]), districtsVotes[partyVotesByDistrictsIndex]) + '%' :'%'}
           </td>
           <td
             suppressContentEditableWarning
@@ -138,7 +150,7 @@ export default function PartiesTable(props: PartiesTableProps) {
       );
     });
     tableInputs.push(<td key={`table-inputs-by-${party}`}>{partiesVotesSum[partyIndex]}</td>);
-
+    console.log(partiesVotesSum[partyIndex])
     return tableInputs;
   };
 

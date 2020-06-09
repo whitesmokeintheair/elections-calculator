@@ -3,15 +3,8 @@ import {Button, Form} from 'react-bootstrap';
 import React, { useState } from 'react';
 import Tabs from 'react-bootstrap/Tabs';
 import store from 'store'
-
-export type CandidateType = {
-  name: string,
-  district: string,
-  number: string,
-  voters?: number,
-}
-
-export type CandidatsMap = Map<string, CandidateType[]> 
+import { CandidateType, CandidatsMap } from '../types';
+import { useSimulationContext } from './IsSimulationContext';
 
 type InputProps = {
   indexOfInput: string,
@@ -148,24 +141,24 @@ function InputsParty(props: InputProps) {
                 name={props.indexOfInput}
                 defaultValue={defaultValue?.name}
                 onChange={(e) => getValue(e, 'name')}
-                 className="input"
-                 placeholder="ПІБ"/>
+                className="input"
+                placeholder="ПІБ"/>
             </div>
             <div className="candidate-info__district">
             <Form.Control type="text"
                 name={props.indexOfInput}
                 defaultValue={defaultValue?.district}
                 onChange={(e) => getValue(e, 'district')}
-                 className="input candidate-info__district"
-                 placeholder="Округ"/>
+                className="input candidate-info__district"
+                placeholder="Округ"/>
             </div>
             <div className="candidate-info__number">
             <Form.Control type="text"
                 name={props.indexOfInput}
                 defaultValue={defaultValue?.number}
                 onChange={(e) => getValue(e, 'number')}
-                 className="input candidate-info__number"
-                 placeholder="Номер по округу"/>
+                className="input candidate-info__number"
+                placeholder="Номер по округу"/>
             </div>
             
         </div>

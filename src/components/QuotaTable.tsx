@@ -1,18 +1,22 @@
 import ModalWindow from './ModalWindow';
-import { CandidatesList, CandidatsMap, initialCandidatsMap, CandidateType } from './CandidatesList';
+import { CandidatesList, initialCandidatsMap } from './CandidatesList';
 import React, { useState } from "react";
 import { Table } from "react-bootstrap";
-import { passingParties, inputsValue } from '../data';
+import { passingParties as initialPassingParties, mockPassingParties,  inputsValue, mockInputsValue } from '../data';
 import { getSum } from "../calculations";
+import { useSimulationContext } from './IsSimulationContext';
+import { CandidatsMap, CandidateType } from '../types';
 
 export default function QuotaTable(props: any) {
   const {
     quota
   } = props;
 
-  const { districts } = inputsValue;
+  const { isSimulation } = useSimulationContext()
+  const { districts } = isSimulation ? mockInputsValue : inputsValue;
+  const passingParties = isSimulation ? mockPassingParties : initialPassingParties;
   const parties = Array.from(passingParties.keys());
-  const votesTable = inputsValue.table;
+  const votesTable = isSimulation ? mockInputsValue.table : inputsValue.table;
 
   let mandatesSum = new Array(parties.length).fill(0);
   const additionalMandates = new Array(parties.length).fill(0);
@@ -73,7 +77,7 @@ export default function QuotaTable(props: any) {
         })
         //считаем сумму
         const additionalVotesSum = getSum(additionalVotes);
-        const addMandates = Math.ceil(additionalVotesSum/ quota);
+        const addMandates = Math.floor(additionalVotesSum/ quota);
         additionalMandates[partyIndex] = addMandates;
         const addMandatesSum = mandatesSum[partyIndex] + addMandates;
         additionalMandatesWithMandatesSum[partyIndex] = addMandatesSum;
