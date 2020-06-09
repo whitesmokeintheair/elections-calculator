@@ -4,38 +4,38 @@ import React, { useState } from 'react';
 import Tabs from 'react-bootstrap/Tabs';
 import store from 'store'
 
-export type CandidatType = {
+export type CandidateType = {
   name: string,
   district: string,
   number: string,
   voters?: number,
 }
 
-export type CandidatsMap = Map<string, CandidatType[]> 
+export type CandidatsMap = Map<string, CandidateType[]> 
 
 type InputProps = {
   indexOfInput: string,
   nameOfParty: string,
-  defaultValue?: CandidatType,
-  candidatsByParty: CandidatsMap 
+  defaultValue?: CandidateType,
+  candidatesByParty: CandidatsMap 
 }
 
 type Props = {
   parties: string[],
-  candidatsByParty: CandidatsMap
+  candidatesByParty: CandidatsMap
 }
 
 type InputValue = 'name' | 'district' | 'number'
 
-export const getCandidatFromMap = ({ indexOfInput, nameOfParty, candidatsByParty }: InputProps) => {
-    const candidatsArray = candidatsByParty.get(nameOfParty)
-    if (!candidatsArray) return undefined;
+export const getCandidatFromMap = ({ indexOfInput, nameOfParty, candidatesByParty }: InputProps) => {
+    const candidatesArray = candidatesByParty.get(nameOfParty)
+    if (!candidatesArray) return undefined;
 
-    return candidatsArray[parseInt(indexOfInput)]
+    return candidatesArray[parseInt(indexOfInput)]
 }
 
-const saveInStore = (party: string, candidatsByParty: CandidatsMap) => {
-  const candidatesList = candidatsByParty.get(party)
+const saveInStore = (party: string, candidatesByParty: CandidatsMap) => {
+  const candidatesList = candidatesByParty.get(party)
 
   if (!candidatesList) return
 
@@ -49,37 +49,37 @@ const deleteFromStore = (party: string) => {
 export const initialCandidatsMap = (parties: string[]) => {
   const newCandidatsMap = new Map() as CandidatsMap
   parties.forEach(party => {
-    const candidats = store.get(party)
-    if (candidats) {
-      newCandidatsMap.set(party, candidats)
+    const candidates = store.get(party)
+    if (candidates) {
+      newCandidatsMap.set(party, candidates)
     }
   })
   return newCandidatsMap
 }
 
-const initialCandidatsInputs = ({ parties, candidatsByParty }: Props) => {
+const initialCandidatsInputs = ({ parties, candidatesByParty }: Props) => {
   return parties.map(party => {
-    const candidats = store.get(party)
+    const candidates = store.get(party)
 
-    if (candidats) {
-      candidatsByParty.set(party, candidats)
-      return candidats.map((candidat: CandidatType, i: number) =>
-        <InputsParty key={`inputs-number-${i}`} indexOfInput={i.toString()} nameOfParty={party} candidatsByParty={candidatsByParty} defaultValue={candidat}/>
+    if (candidates) {
+      candidatesByParty.set(party, candidates)
+      return candidates.map((candidate: CandidateType, i: number) =>
+        <InputsParty key={`inputs-number-${i}`} indexOfInput={i.toString()} nameOfParty={party} candidatesByParty={candidatesByParty} defaultValue={candidate}/>
       )
     } else {
-      return [<InputsParty key='0' indexOfInput={'0'} candidatsByParty={candidatsByParty} nameOfParty={party}/>]
+      return [<InputsParty key='0' indexOfInput={'0'} candidatesByParty={candidatesByParty} nameOfParty={party}/>]
     }
   })
 } 
 
 export function CandidatesList(props: Props) {
-    const { parties, candidatsByParty } = props
+    const { parties, candidatesByParty } = props
     const [key, setKey] = useState(0);
     const [arrayInputs, setArrayInputs] = useState(initialCandidatsInputs(props));
 
     function addInputsToTable() {
         const index = arrayInputs[key].length
-        arrayInputs[key].push(<InputsParty key={index} candidatsByParty={candidatsByParty} indexOfInput={index.toString()} nameOfParty={parties[key]} />)
+        arrayInputs[key].push(<InputsParty key={index} candidatesByParty={candidatesByParty} indexOfInput={index.toString()} nameOfParty={parties[key]} />)
         setArrayInputs([ ...arrayInputs ]);
     }
 
@@ -95,7 +95,7 @@ export function CandidatesList(props: Props) {
                 {arrayInputs[key]}
             </Tab>)}
         </Tabs>
-        <Button variant="outline-primary" type="button" className="button-plus candidat-plus" onClick={addInputsToTable}>+</Button>
+        <Button variant="outline-primary" type="button" className="button-plus candidate-plus" onClick={addInputsToTable}>+</Button>
         <div className='d-flex w-100 justify-content-between'>
             <Button
               variant="outline-primary"
@@ -104,14 +104,14 @@ export function CandidatesList(props: Props) {
               onClick={() => {
                 const party = parties[key];
                 deleteFromStore(party)
-                arrayInputs[key] = [<InputsParty candidatsByParty={candidatsByParty} key='0' indexOfInput={'0'} nameOfParty={party}/>]
-                candidatsByParty.set(party, [])
+                arrayInputs[key] = [<InputsParty candidatesByParty={candidatesByParty} key='0' indexOfInput={'0'} nameOfParty={party}/>]
+                candidatesByParty.set(party, [])
                 setArrayInputs([ ...arrayInputs ]);
             }}
             >
               Обнулити список
             </Button>
-            <Button variant="outline-primary" type="button" className="button-save" onClick={() => saveInStore(parties[key], candidatsByParty)}>Обновити список</Button>
+            <Button variant="outline-primary" type="button" className="button-save" onClick={() => saveInStore(parties[key], candidatesByParty)}>Обновити список</Button>
         </div>
         </div>
         </>
@@ -123,7 +123,7 @@ function InputsParty(props: InputProps) {
     const defaultValue = props.defaultValue || getCandidatFromMap(props)
 
     function getValue(event: any, type: 'name' | 'district' | 'number'){
-        let newArray = props.candidatsByParty.get(props.nameOfParty);
+        let newArray = props.candidatesByParty.get(props.nameOfParty);
         const value = event.target.value;
         
         if (!newArray) {
@@ -132,18 +132,18 @@ function InputsParty(props: InputProps) {
             newArray = [ newObj ]
         } else {
             const index = parseInt(props.indexOfInput);
-            const candidat = newArray[index] || {} as any
-            candidat[type] = value
-            newArray[index] = { ...candidat }
+            const candidate = newArray[index] || {} as any
+            candidate[type] = value
+            newArray[index] = { ...candidate }
         }
         
-        props.candidatsByParty.set(props.nameOfParty, newArray);
+        props.candidatesByParty.set(props.nameOfParty, newArray);
     }
 
     return (
         <>
-        <div className="candidat-info">
-            <div className="candidat-info__name">
+        <div className="candidate-info">
+            <div className="candidate-info__name">
             <Form.Control type="text"
                 name={props.indexOfInput}
                 defaultValue={defaultValue?.name}
@@ -151,20 +151,20 @@ function InputsParty(props: InputProps) {
                  className="input"
                  placeholder="ПІБ"/>
             </div>
-            <div className="candidat-info__district">
+            <div className="candidate-info__district">
             <Form.Control type="text"
                 name={props.indexOfInput}
                 defaultValue={defaultValue?.district}
                 onChange={(e) => getValue(e, 'district')}
-                 className="input candidat-info__district"
+                 className="input candidate-info__district"
                  placeholder="Округ"/>
             </div>
-            <div className="candidat-info__number">
+            <div className="candidate-info__number">
             <Form.Control type="text"
                 name={props.indexOfInput}
                 defaultValue={defaultValue?.number}
                 onChange={(e) => getValue(e, 'number')}
-                 className="input candidat-info__number"
+                 className="input candidate-info__number"
                  placeholder="Номер по округу"/>
             </div>
             

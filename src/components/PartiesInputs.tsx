@@ -14,6 +14,7 @@ const isInputs = () => {
 export default function PartiesInputs() {
   const [valueInInput, setValueInInput] = useState('');
   const [clickSave, setClickSave] = useState(false);
+  const [ listParties, setList ] = useState(inputsValue.parties)
   const renderTable = useMemo(() => <PartiesTable data={inputsValue} />, [ clickSave ]);
 
   const fillTable = () => {
@@ -36,8 +37,17 @@ export default function PartiesInputs() {
 
   function SaveInputValueToArray() {
     const index = inputsValue["parties"].length;
-    inputsValue["parties"][index] = valueInInput;
-    setValueInInput(valueInInput => '');
+    const parties = valueInInput.split(',');
+    parties.forEach((value, i) => {
+      inputsValue["parties"][index + i] = value;
+    })
+    setValueInInput('');
+  }
+
+  function SaveInputsValueToArray(e: any) {
+    const parties = e.target.value.split(',') as string[]
+    inputsValue["parties"] = parties
+    setList(parties)
   }
 
   function Save() {
@@ -78,6 +88,13 @@ export default function PartiesInputs() {
             >
               +
             </Button>
+            <Form.Control
+              className='mt-3'
+              as="textarea"
+              rows={2}
+              value={listParties}
+              onChange={SaveInputsValueToArray}
+            />
           </div>
 
           <div className="form-inputs__right">

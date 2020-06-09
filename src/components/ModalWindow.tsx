@@ -2,28 +2,47 @@ import {Modal, Tab} from 'react-bootstrap';
 import {Button, Form} from 'react-bootstrap';
 import React, { useState, useEffect } from 'react';
 import Tabs from 'react-bootstrap/Tabs';
-import { CandidatType } from './CandidatesList';
+import { CandidateType } from './CandidatesList';
 import partition from 'lodash.partition'
 
 type Props = {
   hide: () => void,
-  candidatsByDistrict: CandidatType[],
+  candidatesByDistrict: CandidateType[],
   quota: number,
   mandatesCount: number
 }
 
-export default function ModalWindow({ hide, candidatsByDistrict, quota, mandatesCount }: Props) {
+type ResultsViewProps = {
+  candidates: CandidateType[]
+}
+
+const ResultsView = ({ candidates }: ResultsViewProps) => (
+  <div className='results-list text-center'>
+    <div className='results-header row'>
+      <div className='col-4'>ПІБ</div>
+      <div className='col-4'>Номер на окрузі</div>
+      <div className='col-4'>Кількість голосів</div>
+    </div>
+    {candidates.map((candidate, i) => <div key={`${candidate.name}-${candidate.district}-${i}`} className='results-item row'>
+      <div className='col-4'>{candidate.name}</div>
+      <div className='col-4'>{candidate.number}</div>
+      <div className='col-4'>{candidate.voters}</div>
+    </div>)}
+  </div>
+)
+
+export default function ModalWindow({ hide, candidatesByDistrict, quota, mandatesCount }: Props) {
   const [key, setKey] = useState<string>('everybody');
   const [ calculateClick, setCalculateClick ] = useState(false)
-  const [ results, setResults ] = useState<CandidatType[]>([])
+  const [ results, setResults ] = useState<CandidateType[]>([])
   
   function CalcualteVoiceCandidate() {
     setCalculateClick(!calculateClick)
-    setKey('rezult');
+    setKey('result');
   }
 
   useEffect(() => {
-    const [ wins, other ] = partition(candidatsByDistrict, ({ voters }) => voters && voters >= quota)
+    const [ wins, other ] = partition(candidatesByDistrict, ({ voters }) => voters && voters >= quota)
     
     const winnersCount = wins.length
 
@@ -32,7 +51,7 @@ export default function ModalWindow({ hide, candidatsByDistrict, quota, mandates
 
     setResults([ ...wins ])
     
-  }, [candidatsByDistrict, quota, calculateClick, mandatesCount])
+  }, [candidatesByDistrict, quota, calculateClick, mandatesCount])
 
   return (
     <Modal
@@ -49,42 +68,38 @@ export default function ModalWindow({ hide, candidatsByDistrict, quota, mandates
       onSelect={(k: React.SetStateAction<string>) => setKey(k)}
     >
       <Tab eventKey="everybody" title="Всі">
-        <AddCandidates candidats={candidatsByDistrict} />
+        <AddCandidates candidates={candidatesByDistrict} />
       </Tab>
-      <Tab eventKey="rezult" title="Результати">
-        {results.map(({ voters, name, number}) => <div className="form-inputs__left">
-            <span className="name-candidate mr-4">{name}</span>
-            <span className="number-candidate mr-4">{number}</span>
-            <span className="voters-candidate">{voters}</span>
-          </div>)}
+      <Tab eventKey="result" title="Результати">
+        <ResultsView candidates={results} />
       </Tab>
     </Tabs>
       </Modal.Body>
       <Modal.Footer className="modal-buttons">
         <Button onClick={hide}>Закрити</Button>
-        <Button onClick={CalcualteVoiceCandidate} disabled={key === 'rezult' ? true : false}>Розрахувати</Button>
+        <Button onClick={CalcualteVoiceCandidate} disabled={key === 'result' ? true : false}>Розрахувати</Button>
       </Modal.Footer>
     </Modal>
   );
 }
 
 type AddCandidateProps = {
-  candidats: CandidatType[]
+  candidates: CandidateType[]
 }
 
-function AddCandidates ({ candidats }: AddCandidateProps){
+function AddCandidates ({ candidates }: AddCandidateProps){
   return <>
-    {candidats.map(candidat => 
-      <div key={`${candidat.name}-on-${candidat.number}`} className="person-voice">
+    {candidates.map(candidate => 
+      <div key={`${candidate.name}-on-${candidate.number}`} className="person-voice">
           <div className="form-inputs__left">
-            <p className="name-candidate">{candidat.name}</p>
+            <p className="name-candidate">{candidate.name}</p>
           </div>
           <div className="form-inputs__right">
             <Form.Control type="text"
-                  defaultValue={candidat.voters}
+                  defaultValue={candidate.voters}
                   className="input"
                   placeholder="Голоси"
-                  onChange={(e) => candidat.voters = parseInt(e.target.value)}/>
+                  onChange={(e) => candidate.voters = parseInt(e.target.value)}/>
           </div>
       </div>
     )}

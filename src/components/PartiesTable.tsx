@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import {Table} from 'react-bootstrap';
 import { getElectorsCounts } from '../scraper/getElectorsCount'
 import QuotaInput from './QuotaInput';
-import { passingParties } from '../data';
 import { PartiesTableData } from '../types';
 import { getSum } from '../calculations';
 

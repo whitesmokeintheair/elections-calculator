@@ -1,5 +1,5 @@
 import ModalWindow from './ModalWindow';
-import { CandidatesList, CandidatsMap, initialCandidatsMap, CandidatType } from './CandidatesList';
+import { CandidatesList, CandidatsMap, initialCandidatsMap, CandidateType } from './CandidatesList';
 import React, { useState } from "react";
 import { Table } from "react-bootstrap";
 import { passingParties, inputsValue } from '../data';
@@ -20,8 +20,8 @@ export default function QuotaTable(props: any) {
 
   // modal State
   const [ showModal, setModalShow ] = useState(false);
-  const [ candidatsByParty ] = useState<CandidatsMap>(initialCandidatsMap(parties)) 
-  const [ candidatsByDistrict, setCandidatsByDistrict ] = useState<CandidatType[]>([])
+  const [ candidatesByParty ] = useState<CandidatsMap>(initialCandidatsMap(parties)) 
+  const [ candidatesByDistrict, setCandidatsByDistrict ] = useState<CandidateType[]>([])
   const [ mandatesCount, setMandatesCount ] = useState(0)
 
   function calculateMandatesByDistricts() {
@@ -90,15 +90,15 @@ export default function QuotaTable(props: any) {
 
     tableRow.forEach((value: any, i: number) => {
       tds.push(<td onClick={() => {
-        const allCandidatsList = candidatsByParty.get(party)
+        const allCandidatsList = candidatesByParty.get(party)
         const currentDistrict = districts[i].toString()
-        const candidatsByDistrict = allCandidatsList && allCandidatsList.filter(x => x.district === currentDistrict)
+        const candidatesByDistrict = allCandidatsList && allCandidatsList.filter(x => x.district === currentDistrict)
 
-        if (!candidatsByDistrict || !candidatsByDistrict.length)
+        if (!candidatesByDistrict || !candidatesByDistrict.length)
           return alert(`Немає жодного депутата від партії ${party} на окрузі №${currentDistrict}`)
         
-        candidatsByDistrict.sort((a, b) => parseInt(a.number) - parseInt(b.number))
-        setCandidatsByDistrict([ ...candidatsByDistrict ])
+        candidatesByDistrict.sort((a, b) => parseInt(a.number) - parseInt(b.number))
+        setCandidatsByDistrict([ ...candidatesByDistrict ])
         setMandatesCount(value)
         setModalShow(true)
       }} key={`mandats-for-${party}-${i}`}>{value}</td>);
@@ -143,8 +143,8 @@ export default function QuotaTable(props: any) {
           </tr>
         </tfoot>
       </Table>
-      {showModal && <ModalWindow hide={() => setModalShow(false)} mandatesCount={mandatesCount} quota={quota/4} candidatsByDistrict={candidatsByDistrict} />}
-      <CandidatesList parties={parties} candidatsByParty={candidatsByParty} />
+      {showModal && <ModalWindow hide={() => setModalShow(false)} mandatesCount={mandatesCount} quota={quota/4} candidatesByDistrict={candidatesByDistrict} />}
+      <CandidatesList parties={parties} candidatesByParty={candidatesByParty} />
     </>
     );
 }
