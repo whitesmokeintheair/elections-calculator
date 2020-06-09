@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import {Table} from 'react-bootstrap';
 import { getElectorsCounts } from '../scraper/getElectorsCount'
 import QuotaInput from './QuotaInput';
-import { passingParties } from '../data';
 import { PartiesTableData } from '../types';
 import { getSum } from '../calculations';
 
@@ -28,7 +27,6 @@ export default function PartiesTable(props: PartiesTableProps) {
 
   useEffect(() => {
     getElectorsCounts(districts).then((votes) => {
-      console.log(votes)
       setDistrictsVotes(votes)
     })
   }, [ districts ])
@@ -65,7 +63,6 @@ export default function PartiesTable(props: PartiesTableProps) {
     allVotesForParties = getSum(partiesVotesSum);
     thresholdVotes = countVotesWithPercent(threshold, allVotesForParties);
 
-    console.log('here pass', passingParties);
     countPassingPartiesVotes();
 
     setPartiesVotesSum([...votesForParty]);
@@ -168,8 +165,20 @@ export default function PartiesTable(props: PartiesTableProps) {
         <tfoot>
           <tr>
             <td>Всього:</td>
-            {districtsVotes.map(votes => (
-              <td key={`all-votest-${votes}`} colSpan={2}>{votes}</td>
+            {districtsVotes.map((votes, i) => (
+              <td
+                suppressContentEditableWarning
+                contentEditable
+                onBlur={e => {
+                  const value = parseInt(e.target.innerText);
+                  districtsVotes[i] = value
+                  setDistrictsVotes([ ...districtsVotes ])
+                }}
+                key={`all-votest-${votes}`}
+                colSpan={2}
+              >
+                {votes}
+              </td>
             ))}
             <td></td>
           </tr>

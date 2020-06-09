@@ -11,34 +11,16 @@ const isInputs = () => {
   );
 };
 
-function Input(props: any) {
-  function Change(event: any) {
-    inputsValue["parties"][props.name] = event.target.value;
-    event.preventDefault();
-  }
-
-  return (
-    <Form.Control
-      name={props.name}
-      onChange={Change}
-      className="form-inputs__party input"
-      type="text"
-      placeholder="Введіть назву партії"
-    />
-  );
-}
-
 export default function PartiesInputs() {
-  const [arrayInputs, setInputs] = useState([<Input key="0" name={0} />]);
+  const [valueInInput, setValueInInput] = useState('');
   const [clickSave, setClickSave] = useState(false);
+  const [ listParties, setList ] = useState(inputsValue.parties)
   const renderTable = useMemo(() => <PartiesTable data={inputsValue} />, [ clickSave ]);
 
   const fillTable = () => {
     inputsValue.parties.forEach((party: string) => {
       const tableRow = inputsValue.table.get(party)
-      console.log(tableRow)
       if (!tableRow || tableRow.length === 0) {
-        console.log(tableRow)
         inputsValue.table.set(
           party,
           new Array(inputsValue.districts.length).fill(0)
@@ -47,9 +29,25 @@ export default function PartiesInputs() {
     });
   };
 
-  function AddInput() {
-    const index = arrayInputs.length
-    setInputs(arrayInputs.concat(<Input key={`inputs_parties-${index}`} name={index} />));
+  function ChangeInput(event: any) {
+    const input = event.target.value;
+    setValueInInput(valueInInput => input);
+    event.preventDefault();
+  }
+
+  function SaveInputValueToArray() {
+    const index = inputsValue["parties"].length;
+    const parties = valueInInput.split(',');
+    parties.forEach((value, i) => {
+      inputsValue["parties"][index + i] = value;
+    })
+    setValueInInput('');
+  }
+
+  function SaveInputsValueToArray(e: any) {
+    const parties = e.target.value.split(',') as string[]
+    inputsValue["parties"] = parties
+    setList(parties)
   }
 
   function Save() {
@@ -73,15 +71,30 @@ export default function PartiesInputs() {
       <Form>
         <div className="form-inputs">
           <div className="form-inputs__left">
-            <div className="form-inputs_parties">{arrayInputs}</div>
+            <div className="form-inputs_parties">
+              <Form.Control
+                value={valueInInput}
+                onChange={ChangeInput}
+                className="form-inputs__party input"
+                type="text"
+                placeholder="Введіть назву партії"
+              />
+            </div>
             <Button
               variant="outline-primary"
               type="button"
               className="button-plus"
-              onClick={AddInput}
+              onClick={SaveInputValueToArray}
             >
               +
             </Button>
+            <Form.Control
+              className='mt-3'
+              as="textarea"
+              rows={2}
+              value={listParties}
+              onChange={SaveInputsValueToArray}
+            />
           </div>
 
           <div className="form-inputs__right">

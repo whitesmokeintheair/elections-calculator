@@ -13,7 +13,7 @@ td {
   justify-content: space-between;
 }
 
-.candidat-info {
+.candidate-info {
   display: flex;
   justify-content: space-around;
 }
@@ -65,19 +65,19 @@ td {
   height: auto;
 }
 
-.candidat-info__name {
+.candidate-info__name {
   width: 30%;
 }
 
-.candidat-info__district {
+.candidate-info__district {
   width: 20%;
 }
 
-.candidat-info__number {
+.candidate-info__number {
   width: 20%;
 }
 
-.candidat-plus {
+.candidate-plus {
   margin-left: 5%;
 }
 
