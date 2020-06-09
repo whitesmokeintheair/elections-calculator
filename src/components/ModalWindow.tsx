@@ -2,7 +2,7 @@ import {Modal, Tab} from 'react-bootstrap';
 import {Button, Form} from 'react-bootstrap';
 import React, { useState, useEffect } from 'react';
 import Tabs from 'react-bootstrap/Tabs';
-import { CandidateType } from './CandidatesList';
+import { CandidateType } from '../types';
 import partition from 'lodash.partition'
 
 type Props = {
@@ -44,6 +44,7 @@ export default function ModalWindow({ hide, candidatesByDistrict, quota, mandate
   useEffect(() => {
     const [ wins, other ] = partition(candidatesByDistrict, ({ voters }) => voters && voters >= quota)
     
+    wins.sort((a, b) => (!(a.voters) || !(b.voters)) ? 0 : b.voters - a.voters)
     const winnersCount = wins.length
 
     if (winnersCount < mandatesCount)

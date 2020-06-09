@@ -2,16 +2,20 @@ import React, { useState, useMemo } from "react";
 import { Form, Button } from "react-bootstrap";
 import QuotaTable from "./QuotaTable";
 import { passingParties, inputsValue } from "../data";
+import { useSimulationContext } from "./IsSimulationContext";
 
 let mandates = 0;
 let quota = 0;
 
 export default function OuotaInput(props: any) {
+  const { isSimulation } = useSimulationContext()
   const { partiesVotesSum, thresholdVotes, passingPartiesVotes } = props;
   const [clickCalculate, setClickCalculate] = useState(false);
 
   const renderTable = useMemo(() => {return <QuotaTable quota={quota} />;
   }, [clickCalculate]);
+
+  if (isSimulation) return <QuotaTable quota={passingPartiesVotes/120} />
 
   function filterPassingParties() {
     const parties = inputsValue.parties;

@@ -2,8 +2,13 @@ td {
   width: 5%;
 }
 
+.switch {
+  width: 15rem;
+}
+
 .container {
-  width: 70%;
+  margin-right: 0 !important;
+  margin-left: 0 !important;
 }
 
 .form-inputs,
