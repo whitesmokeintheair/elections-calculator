@@ -1,14 +1,39 @@
 td {
   width: 5%;
 }
+body{
+  width: 100%;
+}
+
+table{
+  font-size: 1vw;
+  
+}
+
+@media (min-width: 992px){
+    .container, .container-sm, .container-md, .container-lg {
+      max-width: 100vw !important;
+  }
+}
+
+@media (min-width: 1200px){
+    .container, .container-sm, .container-md, .container-lg, .container-xl {
+      max-width: 100vw !important;
+  }
+}
+
+.container{
+  margin: 0 !important;
+}
+
+form{
+  width: 70%;
+  margin: auto;
+  margin-bottom: 2rem;
+}
 
 .switch {
   width: 15rem;
-}
-
-.container {
-  margin-right: 0 !important;
-  margin-left: 0 !important;
 }
 
 .form-inputs,
@@ -93,3 +118,15 @@ td {
   margin-top: 40px;
 }
 
+.error {
+  color: red;
+  margin-top: -10px;
+}
+
+.results-item.row{
+  margin-bottom: 1rem;
+}
+
+.results-header.row{
+  margin-bottom: 1rem;
+}

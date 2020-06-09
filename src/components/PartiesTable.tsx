@@ -24,6 +24,8 @@ export default function PartiesTable(props: PartiesTableProps) {
   const [ districtsVotes, setDistrictsVotes ] = useState<number[]>([])
   const [ partiesVotesSum, setPartiesVotesSum ] = useState(isSimulation ? mockPartiesVotesSum : new Array(parties.length).fill(0));
 
+  const [ percentError, setPercentError ] = useState(false);
+
   const updateMap = (key: string, value: any) => {
     table.set(key, value);
   };
@@ -59,6 +61,15 @@ export default function PartiesTable(props: PartiesTableProps) {
     party: string
   ) {
     let inputValue = Number.parseInt(e.target.innerText);
+    if(inputValue > 100) {
+      setPercentError(true);
+      e.target.innerText = 'макс. 100%';
+      e.target.className = 'error';
+      return;
+    }
+    if(!inputValue){
+      return;
+    }
     let tableRow = table.get(party);
     let votesInput = e.target.nextSibling;
 
@@ -94,6 +105,10 @@ export default function PartiesTable(props: PartiesTableProps) {
     let inputValue = Number.parseInt(e.target.innerText);
     let tableRow = table.get(party);
     let percentInput = e.target.previousSibling;
+
+    if(!inputValue){
+      return;
+    }
 
     if(tableRow) tableRow[partyVotesByDistrictsIndex] = inputValue;
 
@@ -133,6 +148,11 @@ export default function PartiesTable(props: PartiesTableProps) {
                 partyVotesByDistrictsIndex,
                 party
               )
+            }
+            onInput = {(e: any) => {
+                setPercentError(false);
+                e.target.className = '';
+              }
             }
           >
             {isSimulation ? countPercent(parseInt((table.get(party) as any[])[partyVotesByDistrictsIndex]), districtsVotes[partyVotesByDistrictsIndex]) + '%' :'%'}

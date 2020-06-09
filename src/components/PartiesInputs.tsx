@@ -14,11 +14,11 @@ const isInputs = () => {
 
 export default function PartiesInputs() {
   const { isSimulation } = useSimulationContext()
-  console.log(isSimulation)
   const [valueInInput, setValueInInput] = useState('');
   const [clickSave, setClickSave] = useState(false);
   const [ listParties, setList ] = useState(inputsValue.parties)
   const renderTable = useMemo(() => <PartiesTable data={inputsValue} />, [ clickSave ]);
+  const [ thresholdError, setThresholdError ] = useState(false);
 
   if (isSimulation) return <PartiesTable data={mockInputsValue} />
 
@@ -68,7 +68,12 @@ export default function PartiesInputs() {
   }
 
   function getValueThreshold(event: any) {
-    inputsValue["threshold"] = parseInt(event.target.value, 10);
+    const value = parseInt(event.target.value, 10);
+    if(value < 100){
+      inputsValue["threshold"] = value;
+    } else{
+      setThresholdError(true);
+    }
   }
 
   return (
@@ -111,10 +116,12 @@ export default function PartiesInputs() {
             />
             <Form.Control
               onChange={getValueThreshold}
+              onInput = {() => setThresholdError(false)}
               type="text"
               className="form-inputs__threshold input"
               placeholder="Введіть прохідний поріг"
             />
+            {thresholdError && <span className='error'> Поріг не може бути більше 100% </span>}
             <Button
               variant="primary"
               type="button"

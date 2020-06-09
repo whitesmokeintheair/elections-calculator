@@ -34,7 +34,7 @@ export default function OuotaInput(props: any) {
 
   function calculateQuota() {
     filterPassingParties();
-    quota = passingPartiesVotes / mandates;
+    quota = +(passingPartiesVotes / mandates).toFixed(2);
   }
 
   function getValuemandates(event: any) {
