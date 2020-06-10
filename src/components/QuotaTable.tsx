@@ -38,7 +38,7 @@ export default function QuotaTable(props: any) {
         let mandatesForDistrict = 0;
         if(votesForPartyArray)
         votesForPartyArray.forEach((votes) => {
-          mandatesForDistrict = Math.round(votes/quota);
+          mandatesForDistrict = Math.floor(votes/quota);
           mandatesForDistrictsArray.push(mandatesForDistrict);
         })
         summedMandates[partyIndex] = getSum(mandatesForDistrictsArray);
@@ -77,7 +77,7 @@ export default function QuotaTable(props: any) {
         })
         //считаем сумму
         const additionalVotesSum = getSum(additionalVotes);
-        const addMandates = Math.round(additionalVotesSum/ quota);
+        const addMandates = Math.floor(additionalVotesSum/ quota);
         additionalMandates[partyIndex] = addMandates;
         const addMandatesSum = mandatesSum[partyIndex] + addMandates;
         additionalMandatesWithMandatesSum[partyIndex] = addMandatesSum;
