@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import Tabs from 'react-bootstrap/Tabs';
 import store from 'store'
 import { CandidateType, CandidatsMap } from '../types';
-import { useSimulationContext } from './IsSimulationContext';
 
 type InputProps = {
   indexOfInput: string,

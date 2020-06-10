@@ -9,7 +9,7 @@ let quota = 0;
 
 export default function OuotaInput(props: any) {
   const { isSimulation } = useSimulationContext()
-  const { partiesVotesSum, thresholdVotes, passingPartiesVotes } = props;
+  const { partiesVotesSum, thresholdVotes, passingPartiesVotes, percentError } = props;
   const [clickCalculate, setClickCalculate] = useState(false);
 
   const renderTable = useMemo(() => {return <QuotaTable quota={quota} />;
@@ -63,6 +63,7 @@ export default function OuotaInput(props: any) {
           <Button
             variant="primary"
             type="button"
+            disabled={percentError}
             className="button-calculate"
             onClick={CalculateTable}
           >

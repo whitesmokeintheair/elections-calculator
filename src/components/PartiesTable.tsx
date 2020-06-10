@@ -6,6 +6,7 @@ import { PartiesTableData } from '../types';
 import { getSum } from '../calculations';
 import { useSimulationContext } from './IsSimulationContext';
 import { mockDistrictsAllVoter, mockPartiesVotesSum } from '../data';
+import memoizee from 'memoizee'
 
 type PartiesTableProps = {
   data: PartiesTableData;
@@ -92,8 +93,8 @@ export default function PartiesTable(props: PartiesTableProps) {
     setPartiesVotesSum([...votesForParty]);
   }
 
-  function countVotesWithPercent(percent: number, allVotes: number) {
-    return Math.floor((percent / 100) * allVotes);
+  const countVotesWithPercent = (percent: number, allVotes: number) => {
+    return Math.round((percent / 100) * allVotes);
   };
 
   function handleVotesInput(
@@ -123,11 +124,11 @@ export default function PartiesTable(props: PartiesTableProps) {
     setThresholdVotes(countVotesWithPercent(threshold, allVotesForParties));
     countPassingPartiesVotes();
 
-    percentInput.innerText = countPercent(inputValue, allDistrictVotes);
+    percentInput.innerText = countPercent(inputValue, allDistrictVotes) + '%';
   }
 
   const countPercent = (percentOf: number, percentFrom: number) => {
-    return Math.floor((percentOf * 100) / percentFrom);
+    return Math.round((percentOf * 100) / percentFrom);
   };
 
   const renderInputRows = (party: string, partyIndex: number) => {
@@ -170,7 +171,6 @@ export default function PartiesTable(props: PartiesTableProps) {
       );
     });
     tableInputs.push(<td key={`table-inputs-by-${party}`}>{partiesVotesSum[partyIndex]}</td>);
-    console.log(partiesVotesSum[partyIndex])
     return tableInputs;
   };
 
@@ -216,7 +216,7 @@ export default function PartiesTable(props: PartiesTableProps) {
           </tr>
         </tfoot>
       </Table>
-      <QuotaInput partiesVotesSum={partiesVotesSum} thresholdVotes={thresholdVotes} passingPartiesVotes={passingPartiesVotes}/>
+      <QuotaInput percentError={percentError} partiesVotesSum={partiesVotesSum} thresholdVotes={thresholdVotes} passingPartiesVotes={passingPartiesVotes}/>
     </>
   );
 }
