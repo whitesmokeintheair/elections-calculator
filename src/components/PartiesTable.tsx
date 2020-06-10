@@ -6,7 +6,6 @@ import { PartiesTableData } from '../types';
 import { getSum } from '../calculations';
 import { useSimulationContext } from './IsSimulationContext';
 import { mockDistrictsAllVoter, mockPartiesVotesSum } from '../data';
-import memoizee from 'memoizee'
 
 type PartiesTableProps = {
   data: PartiesTableData;
