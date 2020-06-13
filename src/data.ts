@@ -5,7 +5,6 @@ import uniqBy from 'lodash.uniqby'
 export const passingParties = new Map<string, any[]>();
 
 export let winsCandidates: CandidateType[] = []
-
 export const appendToWins = (wins: CandidateType[]) => {
   const allCandidates = winsCandidates.concat(...wins)
   winsCandidates = uniqBy(allCandidates, 'name')

@@ -3,14 +3,17 @@ import { CandidatesList, initialCandidatsMap } from './CandidatesList';
 import React, { useState } from "react";
 import { Table } from "react-bootstrap";
 import { passingParties as initialPassingParties, mockPassingParties,  inputsValue, mockInputsValue, winsCandidates } from '../data';
-import { getSum } from "../calculations";
+import { getSum, calculateOtherMandates } from "../calculations";
 import { useSimulationContext } from './IsSimulationContext';
 import { CandidatsMap, CandidateType } from '../types';
 
 export default function QuotaTable(props: any) {
   const {
+    mandates,
     quota
   } = props;
+
+  console.log(props)
 
   const { isSimulation } = useSimulationContext()
   const { districts } = isSimulation ? mockInputsValue : inputsValue;
@@ -77,10 +80,14 @@ export default function QuotaTable(props: any) {
         })
         //считаем сумму
         const additionalVotesSum = getSum(additionalVotes);
-        const addMandates = Math.floor(additionalVotesSum/ quota);
+        const addMandates = additionalVotesSum/ quota;
         additionalMandates[partyIndex] = addMandates;
         const addMandatesSum = mandatesSum[partyIndex] + addMandates;
         additionalMandatesWithMandatesSum[partyIndex] = addMandatesSum;
+        if (partyIndex === additionalMandates.length - 1) {
+          console.log('I am here', mandates)
+          calculateOtherMandates(additionalMandatesWithMandatesSum, additionalMandates, mandates)
+        }
       }
     })
   }
@@ -108,8 +115,8 @@ export default function QuotaTable(props: any) {
       }} key={`mandats-for-${party}-${i}`}>{value}</td>);
     });
     tds.push(<td key={`mandats-sum-for-${party}`}>{mandatesSum[partyIndex]}</td>);
-    tds.push(<td key={`additional-mandats-for-${party}`}>{additionalMandates[partyIndex]}</td>);
-    tds.push(<td key={`all-mandats-for-${party}`}>{additionalMandatesWithMandatesSum[partyIndex]}</td>);
+    tds.push(<td key={`additional-mandats-for-${party}`}>{Math.floor(additionalMandates[partyIndex])}</td>);
+    tds.push(<td key={`all-mandats-for-${party}`}>{Math.floor(additionalMandatesWithMandatesSum[partyIndex])}</td>);
 
     return tds;
   };
