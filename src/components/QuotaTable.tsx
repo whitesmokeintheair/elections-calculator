@@ -2,7 +2,7 @@ import ModalWindow from './ModalWindow';
 import { CandidatesList, initialCandidatsMap } from './CandidatesList';
 import React, { useState } from "react";
 import { Table } from "react-bootstrap";
-import { passingParties as initialPassingParties, mockPassingParties,  inputsValue, mockInputsValue } from '../data';
+import { passingParties as initialPassingParties, mockPassingParties,  inputsValue, mockInputsValue, winsCandidates } from '../data';
 import { getSum } from "../calculations";
 import { useSimulationContext } from './IsSimulationContext';
 import { CandidatsMap, CandidateType } from '../types';
@@ -149,6 +149,27 @@ export default function QuotaTable(props: any) {
       </Table>
       {showModal && <ModalWindow hide={() => setModalShow(false)} mandatesCount={mandatesCount} quota={quota/4} candidatesByDistrict={candidatesByDistrict} />}
       <CandidatesList parties={parties} candidatesByParty={candidatesByParty} />
+      <div className='mt-4'>
+        <div className='quota text-center'>Депутати київської міської ради</div>
+        <Table striped bordered size="sm">
+          <thead>
+            <tr>
+              <th key={`head-district`} colSpan={2}>Округ</th>
+              <th key={`head-name`} colSpan={2}>ПІБ</th>
+              <th key={`head-party`} colSpan={2}>Партія</th>
+            </tr>
+          </thead>
+          <tbody>
+            {winsCandidates.map(({ name, party, district }) => (
+              <tr key={`table-rows-for-${name}`}>
+                <td colSpan={2}>{district}</td>
+                <td colSpan={2}>{name}</td>
+                <td colSpan={2}>{party}</td>
+              </tr>
+            ))}
+          </tbody>
+          </Table>
+      </div>
     </>
     );
 }

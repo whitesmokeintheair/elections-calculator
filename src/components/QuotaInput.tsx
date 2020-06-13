@@ -12,10 +12,10 @@ export default function OuotaInput(props: any) {
   const { partiesVotesSum, thresholdVotes, passingPartiesVotes, percentError } = props;
   const [clickCalculate, setClickCalculate] = useState(false);
 
-  const renderTable = useMemo(() => {return <QuotaTable quota={quota} />;
-  }, [clickCalculate]);
+  const renderTable = useMemo(() => {return <QuotaTable quota={Math.ceil(quota)} />;
+  }, [ clickCalculate ]);
 
-  if (isSimulation) return <QuotaTable quota={passingPartiesVotes/120} />
+  if (isSimulation) return <QuotaTable quota={Math.ceil(passingPartiesVotes/120)} />
 
   function filterPassingParties() {
     const parties = inputsValue.parties;

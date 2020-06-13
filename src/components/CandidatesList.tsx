@@ -121,10 +121,16 @@ function InputsParty(props: InputProps) {
         if (!newArray) {
             const newObj = {} as any;
             newObj[type] = value
+            if (!newObj['party']) {
+              newObj['party'] = props.nameOfParty
+            }
             newArray = [ newObj ]
         } else {
             const index = parseInt(props.indexOfInput);
             const candidate = newArray[index] || {} as any
+            if (!candidate['party']) {
+              candidate['party'] = props.nameOfParty
+            }
             candidate[type] = value
             newArray[index] = { ...candidate }
         }

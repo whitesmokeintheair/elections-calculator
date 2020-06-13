@@ -13,7 +13,7 @@ type PartiesTableProps = {
 
 export default function PartiesTable(props: PartiesTableProps) {
   const {
-    data: { districts, parties, threshold, table = new Map<string, any[]>() }
+    data: { districts, parties, threshold, turnout, table = new Map<string, any[]>() }
   } = props;
 
   const [ allVotesForParties, setAllVotesForParties ] = useState(0);
@@ -40,9 +40,9 @@ export default function PartiesTable(props: PartiesTableProps) {
     }
 
     getElectorsCounts(districts).then((votes) => {
-      setDistrictsVotes(votes)
+      setDistrictsVotes(votes.map(x => Math.ceil(x * turnout / 100)))
     })
-  }, [ districts ])
+  }, [ allVotesForParties, districts, isSimulation, partiesVotesSum, threshold, turnout ])
 
   function countPassingPartiesVotes() {
     let votersSum = 0;
@@ -175,6 +175,7 @@ export default function PartiesTable(props: PartiesTableProps) {
 
   return (
     <>
+      <p className="quota">Явка: {turnout}%</p>
       <Table striped bordered size="sm">
         <thead>
           <tr>
