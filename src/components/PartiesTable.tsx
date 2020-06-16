@@ -13,7 +13,7 @@ type PartiesTableProps = {
 
 export default function PartiesTable(props: PartiesTableProps) {
   const {
-    data: { districts, parties, threshold, table = new Map<string, any[]>() }
+    data: { districts, parties, threshold, turnout, table = new Map<string, any[]>() }
   } = props;
 
   const [ allVotesForParties, setAllVotesForParties ] = useState(0);
@@ -40,9 +40,9 @@ export default function PartiesTable(props: PartiesTableProps) {
     }
 
     getElectorsCounts(districts).then((votes) => {
-      setDistrictsVotes(votes)
+      setDistrictsVotes(votes.map(x => Math.ceil(x * turnout / 100)))
     })
-  }, [ districts ])
+  }, [ allVotesForParties, districts, isSimulation, partiesVotesSum, threshold, turnout ])
 
   function countPassingPartiesVotes() {
     let votersSum = 0;
@@ -92,8 +92,8 @@ export default function PartiesTable(props: PartiesTableProps) {
     setPartiesVotesSum([...votesForParty]);
   }
 
-  function countVotesWithPercent(percent: number, allVotes: number) {
-    return Math.floor((percent / 100) * allVotes);
+  const countVotesWithPercent = (percent: number, allVotes: number) => {
+    return Math.round((percent / 100) * allVotes);
   };
 
   function handleVotesInput(
@@ -123,11 +123,11 @@ export default function PartiesTable(props: PartiesTableProps) {
     setThresholdVotes(countVotesWithPercent(threshold, allVotesForParties));
     countPassingPartiesVotes();
 
-    percentInput.innerText = countPercent(inputValue, allDistrictVotes);
+    percentInput.innerText = countPercent(inputValue, allDistrictVotes) + '%';
   }
 
   const countPercent = (percentOf: number, percentFrom: number) => {
-    return Math.floor((percentOf * 100) / percentFrom);
+    return Math.round((percentOf * 100) / percentFrom);
   };
 
   const renderInputRows = (party: string, partyIndex: number) => {
@@ -170,12 +170,12 @@ export default function PartiesTable(props: PartiesTableProps) {
       );
     });
     tableInputs.push(<td key={`table-inputs-by-${party}`}>{partiesVotesSum[partyIndex]}</td>);
-    console.log(partiesVotesSum[partyIndex])
     return tableInputs;
   };
 
   return (
     <>
+      <p className="quota">Явка: {turnout}%</p>
       <Table striped bordered size="sm">
         <thead>
           <tr>
@@ -216,7 +216,7 @@ export default function PartiesTable(props: PartiesTableProps) {
           </tr>
         </tfoot>
       </Table>
-      <QuotaInput partiesVotesSum={partiesVotesSum} thresholdVotes={thresholdVotes} passingPartiesVotes={passingPartiesVotes}/>
+      <QuotaInput percentError={percentError} partiesVotesSum={partiesVotesSum} thresholdVotes={thresholdVotes} passingPartiesVotes={passingPartiesVotes}/>
     </>
   );
 }

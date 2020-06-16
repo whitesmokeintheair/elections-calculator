@@ -21,6 +21,15 @@ table{
       max-width: 100vw !important;
   }
 }
+.btn-primary {
+  border-color: #00b140 !important;
+  background-color: #00b140 !important;
+}
+
+.btn-outline-primary {
+  color: #00b140 !important;
+  border-color: #00b140 !important;
+}
 
 .container{
   margin: 0 !important;

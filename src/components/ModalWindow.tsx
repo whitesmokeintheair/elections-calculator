@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Tabs from 'react-bootstrap/Tabs';
 import { CandidateType } from '../types';
 import partition from 'lodash.partition'
+import { appendToWins } from '../data';
 
 type Props = {
   hide: () => void,
@@ -49,7 +50,8 @@ export default function ModalWindow({ hide, candidatesByDistrict, quota, mandate
 
     if (winnersCount < mandatesCount)
       wins.push(...other.slice(0, mandatesCount - winnersCount))
-
+    
+    appendToWins(wins)
     setResults([ ...wins ])
     
   }, [candidatesByDistrict, quota, calculateClick, mandatesCount])

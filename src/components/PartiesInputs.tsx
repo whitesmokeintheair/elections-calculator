@@ -19,6 +19,7 @@ export default function PartiesInputs() {
   const [ listParties, setList ] = useState(inputsValue.parties)
   const renderTable = useMemo(() => <PartiesTable data={inputsValue} />, [ clickSave ]);
   const [ thresholdError, setThresholdError ] = useState(false);
+  const [ turnoutError, setTurnoutError ] = useState(false);
 
   if (isSimulation) return <PartiesTable data={mockInputsValue} />
 
@@ -76,6 +77,15 @@ export default function PartiesInputs() {
     }
   }
 
+  function getValueTurnout(event: any) {
+    const value = parseInt(event.target.value, 10);
+    if(value < 100){
+      inputsValue["turnout"] = value;
+    } else{
+      setTurnoutError(true);
+    }
+  }
+
   return (
     <>
       <Form>
@@ -122,6 +132,14 @@ export default function PartiesInputs() {
               placeholder="Введіть прохідний поріг"
             />
             {thresholdError && <span className='error'> Поріг не може бути більше 100% </span>}
+            <Form.Control
+              onChange={getValueTurnout}
+              onInput = {() => setTurnoutError(false)}
+              type="text"
+              className="form-inputs__turnout input"
+              placeholder="Введіть загальну явку"
+            />
+            {turnoutError && <span className='error'> Явка не може бути більше 100% </span>}
             <Button
               variant="primary"
               type="button"

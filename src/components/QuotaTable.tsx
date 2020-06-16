@@ -2,15 +2,18 @@ import ModalWindow from './ModalWindow';
 import { CandidatesList, initialCandidatsMap } from './CandidatesList';
 import React, { useState } from "react";
 import { Table } from "react-bootstrap";
-import { passingParties as initialPassingParties, mockPassingParties,  inputsValue, mockInputsValue } from '../data';
-import { getSum } from "../calculations";
+import { passingParties as initialPassingParties, mockPassingParties,  inputsValue, mockInputsValue, winsCandidates } from '../data';
+import { getSum, calculateOtherMandates } from "../calculations";
 import { useSimulationContext } from './IsSimulationContext';
 import { CandidatsMap, CandidateType } from '../types';
 
 export default function QuotaTable(props: any) {
   const {
+    mandates,
     quota
   } = props;
+
+  console.log(props)
 
   const { isSimulation } = useSimulationContext()
   const { districts } = isSimulation ? mockInputsValue : inputsValue;
@@ -77,10 +80,14 @@ export default function QuotaTable(props: any) {
         })
         //считаем сумму
         const additionalVotesSum = getSum(additionalVotes);
-        const addMandates = Math.floor(additionalVotesSum/ quota);
+        const addMandates = additionalVotesSum/ quota;
         additionalMandates[partyIndex] = addMandates;
         const addMandatesSum = mandatesSum[partyIndex] + addMandates;
         additionalMandatesWithMandatesSum[partyIndex] = addMandatesSum;
+        if (partyIndex === additionalMandates.length - 1) {
+          console.log('I am here', mandates)
+          calculateOtherMandates(additionalMandatesWithMandatesSum, additionalMandates, mandates)
+        }
       }
     })
   }
@@ -108,8 +115,8 @@ export default function QuotaTable(props: any) {
       }} key={`mandats-for-${party}-${i}`}>{value}</td>);
     });
     tds.push(<td key={`mandats-sum-for-${party}`}>{mandatesSum[partyIndex]}</td>);
-    tds.push(<td key={`additional-mandats-for-${party}`}>{additionalMandates[partyIndex]}</td>);
-    tds.push(<td key={`all-mandats-for-${party}`}>{additionalMandatesWithMandatesSum[partyIndex]}</td>);
+    tds.push(<td key={`additional-mandats-for-${party}`}>{Math.floor(additionalMandates[partyIndex])}</td>);
+    tds.push(<td key={`all-mandats-for-${party}`}>{Math.floor(additionalMandatesWithMandatesSum[partyIndex])}</td>);
 
     return tds;
   };
@@ -149,6 +156,27 @@ export default function QuotaTable(props: any) {
       </Table>
       {showModal && <ModalWindow hide={() => setModalShow(false)} mandatesCount={mandatesCount} quota={quota/4} candidatesByDistrict={candidatesByDistrict} />}
       <CandidatesList parties={parties} candidatesByParty={candidatesByParty} />
+      <div className='mt-4'>
+        <div className='quota text-center'>Депутати київської міської ради</div>
+        <Table striped bordered size="sm">
+          <thead>
+            <tr>
+              <th key={`head-district`} colSpan={2}>Округ</th>
+              <th key={`head-name`} colSpan={2}>ПІБ</th>
+              <th key={`head-party`} colSpan={2}>Партія</th>
+            </tr>
+          </thead>
+          <tbody>
+            {winsCandidates.map(({ name, party, district }) => (
+              <tr key={`table-rows-for-${name}`}>
+                <td colSpan={2}>{district}</td>
+                <td colSpan={2}>{name}</td>
+                <td colSpan={2}>{party}</td>
+              </tr>
+            ))}
+          </tbody>
+          </Table>
+      </div>
     </>
     );
 }
