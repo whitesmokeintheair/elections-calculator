@@ -174,8 +174,8 @@ export default function PartiesTable(props: PartiesTableProps) {
   };
 
   return (
-    <>
-      <p className="quota">Явка: {turnout}%</p>
+    <div className='mt-2'>
+      <div className="quota">Явка: {turnout}%</div>
       <Table striped bordered size="sm">
         <thead>
           <tr>
@@ -217,6 +217,6 @@ export default function PartiesTable(props: PartiesTableProps) {
         </tfoot>
       </Table>
       <QuotaInput percentError={percentError} partiesVotesSum={partiesVotesSum} thresholdVotes={thresholdVotes} passingPartiesVotes={passingPartiesVotes}/>
-    </>
+    </div>
   );
 }

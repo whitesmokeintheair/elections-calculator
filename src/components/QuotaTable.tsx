@@ -122,8 +122,8 @@ export default function QuotaTable(props: any) {
   };
 
   return (
-    <>
-      <p className="quota">Квота: {quota}</p>
+    <div className='mt-2'>
+      <div className="quota">Квота: {quota}</div>
       <Table striped bordered size="sm">
         <thead>
           <tr>
@@ -156,7 +156,7 @@ export default function QuotaTable(props: any) {
       </Table>
       {showModal && <ModalWindow hide={() => setModalShow(false)} mandatesCount={mandatesCount} quota={quota/4} candidatesByDistrict={candidatesByDistrict} />}
       <CandidatesList parties={parties} candidatesByParty={candidatesByParty} />
-      <div className='mt-4'>
+      {winsCandidates.length ? <div className='mt-4'>
         <div className='quota text-center'>Депутати київської міської ради</div>
         <Table striped bordered size="sm">
           <thead>
@@ -176,7 +176,7 @@ export default function QuotaTable(props: any) {
             ))}
           </tbody>
           </Table>
-      </div>
-    </>
+      </div> : null }
+    </div>
     );
 }

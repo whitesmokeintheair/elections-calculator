@@ -70,7 +70,6 @@ const votersByParty = [
 
 ]
 
-export const mockDistrictsAllVoter = [ 84121,	95508,	81604,	81017,	75309,	72146,	81378,	73951,	80456,	70682,	83014,	74308,	79078 ]
 
 const fillMockTable = () => {
   const map = new Map()
@@ -78,16 +77,19 @@ const fillMockTable = () => {
   return map;
 }
 
-export const mockPartiesVotesSum = [ 376494, 172261, 102503, 86954, 80533  ]
-
 export const mockInputsValue: PartiesTableData = {
   ...inputsValue,
   parties: mockParties,
   districts: mockDistricts,
   threshold: 5,
-  turnout: 100,
+  turnout: 48.97,
   table: fillMockTable()
 }
+
+export const mockDistrictsAllVoter = [ 84121,	95508,	81604,	81017,	75309,	72146,	81378,	73951,	80456,	70682,	83014,	74308,	79078 ];
+
+export const mockPartiesVotesSum = [ 376494, 172261, 102503, 86954, 80533  ]
+
 const mockPassingPartiesArray = mockParties.slice(0,5)
 export const mockPassingParties = (() => {
   const map = new Map()
